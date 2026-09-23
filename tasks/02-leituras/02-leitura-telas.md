@@ -1,6 +1,6 @@
 # Leitura: telas do admin
 
-> Status: todo · Ordem: 02 · Depende de: 01
+> Status: done · Ordem: 02 · Depende de: 01
 
 ## Objetivo
 
@@ -14,9 +14,9 @@ Telas Inertia/Vue para gerenciar leituras, no mesmo padrão das telas de tags.
 
 ## Critérios de aceite
 
-- [ ] Index com busca, lixeira, paginação, excluir e restaurar; link para abrir a URL.
-- [ ] Create/Edit com título e link, mostrando erros de validação.
-- [ ] Item "Readings" no menu lateral.
+- [x] Index com busca, lixeira, paginação, excluir e restaurar; link para abrir a URL.
+- [x] Create/Edit com título e link, mostrando erros de validação.
+- [x] Item "Readings" no menu lateral.
 
 ## Fora de escopo
 
@@ -24,7 +24,7 @@ Telas Inertia/Vue para gerenciar leituras, no mesmo padrão das telas de tags.
 
 ## Definição de pronto
 
-- [ ] Testes escritos e passando (suíte completa sem quebrar)
-- [ ] Testes de mutação nos arquivos tocados (ex.: Infection sobre o diff): mutantes escapados relevantes mortos e MSI ≥ limite do projeto (ignore equivalentes; foque no domínio, não em boilerplate)
-- [ ] Segue os padrões do projeto (contrato do CLAUDE.md)
-- [ ] Sem segredos, sem comando destrutivo, sem mudança de dependência
+- [x] Testes escritos e passando (suíte completa sem quebrar)
+- [ ] ~~Testes de mutação~~ — Infection não instalado; task só de telas (sem lógica de domínio) (ex.: Infection sobre o diff): mutantes escapados relevantes mortos e MSI ≥ limite do projeto (ignore equivalentes; foque no domínio, não em boilerplate)
+- [x] Segue os padrões do projeto (contrato do CLAUDE.md)
+- [x] Sem segredos, sem comando destrutivo, sem mudança de dependência

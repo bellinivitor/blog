@@ -35,7 +35,7 @@ Autor, comentário, tipo, tags de leitura, links de afiliado, seção "Leituras 
 ## Tasks
 
 - [x] [01 — Leitura: backend e seeder](01-leitura-backend.md) · done
-- [ ] [02 — Leitura: telas do admin](02-leitura-telas.md) · todo
+- [x] [02 — Leitura: telas do admin](02-leitura-telas.md) · done
 - [ ] [03 — Página pública de leituras](03-pagina-publica.md) · todo
 - [ ] [04 — Referência no post: renderização](04-referencia-renderizacao.md) · todo
 - [ ] [05 — Referência no post: editor](05-referencia-editor.md) · todo
