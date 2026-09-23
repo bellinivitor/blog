@@ -35,6 +35,24 @@ class PostQueryBuilder extends Builder
     }
 
     /**
+     * Posts marked as published whose publication date is still ahead.
+     */
+    public function scheduled(): static
+    {
+        $this->where('status', PostStatus::Published)
+            ->where('published_at', '>', now());
+
+        return $this;
+    }
+
+    public function drafts(): static
+    {
+        $this->where('status', PostStatus::Draft);
+
+        return $this;
+    }
+
+    /**
      * The published post right before the given one (older), by publication
      * date with the id as tie-breaker.
      */

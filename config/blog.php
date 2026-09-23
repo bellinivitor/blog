@@ -18,6 +18,12 @@ return [
 
     'bio' => 'Sou desenvolvedor e passo a maior parte do tempo entre Laravel, Vue e decisões de arquitetura. Aqui ficam notas, erros e o que funcionou.',
 
+    /*
+    | Timezone that decides which day a view belongs to in the reading stats.
+    */
+
+    'timezone' => 'America/Sao_Paulo',
+
     'links' => [
         ['label' => 'GitHub', 'url' => 'https://github.com/bellinivitor'],
         ['label' => 'LinkedIn', 'url' => 'https://www.linkedin.com/in/bellinivitor/'],

@@ -29,3 +29,9 @@ export type MostReadPost = {
     slug: string;
     views_count: number;
 };
+
+export type DailyViews = {
+    /** Calendar day in the blog timezone, "YYYY-MM-DD". */
+    date: string;
+    views: number;
+};
