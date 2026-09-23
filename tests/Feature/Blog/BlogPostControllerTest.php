@@ -10,7 +10,7 @@ describe('index', function () {
         Post::factory()->create(['title' => 'Older', 'status' => PostStatus::Published, 'published_at' => '2026-01-01 10:00:00']);
         Post::factory()->create(['title' => 'Newer', 'status' => PostStatus::Published, 'published_at' => '2026-03-01 10:00:00']);
 
-        $response = $this->get(route('blog.index'));
+        $response = $this->get(route('home'));
 
         $response->assertInertia(fn (Assert $page) => $page
             ->component('blog/Index')
@@ -28,7 +28,7 @@ describe('index', function () {
         Post::factory()->published()->trashed()->create(['title' => 'Trashed']);
         Post::factory()->create(['title' => 'Future', 'status' => PostStatus::Published, 'published_at' => '2026-06-01 12:00:00']);
 
-        $response = $this->get(route('blog.index'));
+        $response = $this->get(route('home'));
 
         $response->assertInertia(fn (Assert $page) => $page
             ->has('posts', 1)
@@ -45,7 +45,7 @@ describe('index', function () {
             'content' => str_repeat('word ', 401),
         ]);
 
-        $response = $this->get(route('blog.index'));
+        $response = $this->get(route('home'));
 
         $response->assertInertia(fn (Assert $page) => $page
             ->has('posts.0', fn (Assert $post) => $post
@@ -61,6 +61,12 @@ describe('index', function () {
             )
         );
     });
+});
+
+test('redirects the old /blog address to the home page permanently', function () {
+    $response = $this->get('/blog');
+
+    $response->assertMovedPermanently()->assertRedirect('/');
 });
 
 describe('show', function () {

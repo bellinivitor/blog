@@ -8,9 +8,9 @@ use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Welcome')->name('home');
+Route::get('/', [BlogPostController::class, 'index'])->name('home');
+Route::permanentRedirect('blog', '/');
 
-Route::get('blog', [BlogPostController::class, 'index'])->name('blog.index');
 Route::get('blog/search', [BlogSearchController::class, 'index'])
     ->middleware('throttle:60,1')
     ->name('blog.search');
