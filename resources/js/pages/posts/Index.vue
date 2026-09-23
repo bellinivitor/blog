@@ -136,7 +136,7 @@ function formatDate(value: string | null): string {
                             </p>
                         </td>
                         <td class="px-4 py-3">
-                            <PostStatusBadge :status="post.status" />
+                            <PostStatusBadge :post="post" />
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-1">

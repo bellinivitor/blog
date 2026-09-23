@@ -3,9 +3,11 @@ import { Form, Head, Link } from '@inertiajs/vue3';
 import PostController from '@/actions/App/Http/Controllers/PostController';
 import Heading from '@/components/Heading.vue';
 import PostFormFields from '@/components/posts/PostFormFields.vue';
+import PostScheduleForm from '@/components/posts/PostScheduleForm.vue';
 import PostStatusBadge from '@/components/posts/PostStatusBadge.vue';
 import PostStatusButton from '@/components/posts/PostStatusButton.vue';
 import { Button } from '@/components/ui/button';
+import { isScheduled } from '@/lib/postStatus';
 import type { Post, Tag } from '@/types';
 
 defineOptions({
@@ -18,6 +20,13 @@ defineProps<{
     post: Post;
     tags: Tag[];
 }>();
+
+function formatDateTime(value: string): string {
+    return new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+    }).format(new Date(value));
+}
 </script>
 
 <template>
@@ -27,9 +36,20 @@ defineProps<{
         <div class="flex items-start justify-between gap-4">
             <div class="space-y-2">
                 <Heading :title="post.title" variant="small" />
-                <PostStatusBadge :status="post.status" />
+                <div class="flex items-center gap-2">
+                    <PostStatusBadge :post="post" />
+                    <span
+                        v-if="isScheduled(post) && post.published_at"
+                        class="text-sm text-muted-foreground"
+                    >
+                        Goes live {{ formatDateTime(post.published_at) }}
+                    </span>
+                </div>
             </div>
-            <PostStatusButton :post="post" />
+            <div class="flex flex-wrap items-start justify-end gap-2">
+                <PostScheduleForm v-if="post.status === 'draft'" :post="post" />
+                <PostStatusButton :post="post" />
+            </div>
         </div>
 
         <Form

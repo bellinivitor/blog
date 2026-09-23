@@ -1,14 +1,22 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { Badge } from '@/components/ui/badge';
-import type { PostStatus } from '@/types';
+import { isScheduled } from '@/lib/postStatus';
+import type { Post } from '@/types';
 
-defineProps<{
-    status: PostStatus;
+const props = defineProps<{
+    post: Pick<Post, 'status' | 'published_at'>;
 }>();
+
+const scheduled = computed(() => isScheduled(props.post));
 </script>
 
 <template>
-    <Badge :variant="status === 'published' ? 'default' : 'secondary'">
-        {{ status === 'published' ? 'Published' : 'Draft' }}
+    <Badge v-if="scheduled" variant="outline">Scheduled</Badge>
+    <Badge
+        v-else
+        :variant="post.status === 'published' ? 'default' : 'secondary'"
+    >
+        {{ post.status === 'published' ? 'Published' : 'Draft' }}
     </Badge>
 </template>

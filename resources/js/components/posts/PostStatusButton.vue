@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { EyeOff, Send } from '@lucide/vue';
+import { CalendarX, EyeOff, Send } from '@lucide/vue';
 import PostController from '@/actions/App/Http/Controllers/PostController';
 import { Button } from '@/components/ui/button';
+import { isScheduled } from '@/lib/postStatus';
 import type { Post } from '@/types';
 
 defineProps<{
-    post: Pick<Post, 'id' | 'status'>;
+    post: Pick<Post, 'id' | 'status' | 'published_at'>;
     size?: 'default' | 'sm';
 }>();
 </script>
@@ -23,7 +24,10 @@ defineProps<{
             as="button"
             preserve-scroll
         >
-            <EyeOff /> Unpublish
+            <template v-if="isScheduled(post)"
+                ><CalendarX /> Unschedule</template
+            >
+            <template v-else><EyeOff /> Unpublish</template>
         </Link>
         <Link
             v-else
@@ -31,7 +35,7 @@ defineProps<{
             as="button"
             preserve-scroll
         >
-            <Send /> Publish
+            <Send /> Publish now
         </Link>
     </Button>
 </template>

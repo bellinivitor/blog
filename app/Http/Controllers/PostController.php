@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Post\PublishPostRequest;
 use App\Http\Requests\Post\SearchPostRequest;
 use App\Http\Requests\Post\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
@@ -132,15 +133,17 @@ class PostController extends Controller
     }
 
     /**
-     * Publish a draft post.
+     * Publish a draft post now, or at the given date (a future date schedules it).
      */
-    public function publish(Post $post, ChangePostStatusAction $action): RedirectResponse
+    public function publish(PublishPostRequest $request, Post $post, ChangePostStatusAction $action): RedirectResponse
     {
         Gate::authorize('update', $post);
 
-        $action($post, new PublishedState($post->status));
+        $post = $action($post, new PublishedState($post->status), $request->date('published_at'));
 
-        Inertia::flash('toast', ['type' => 'success', 'message' => 'Post published.']);
+        $message = $post->published_at?->isFuture() ? 'Post scheduled.' : 'Post published.';
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => $message]);
 
         return back();
     }

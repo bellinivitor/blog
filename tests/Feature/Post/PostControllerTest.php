@@ -334,6 +334,60 @@ describe('publish', function () {
     });
 });
 
+describe('schedule', function () {
+    test('schedules a draft for a future date, hidden from the blog until then', function () {
+        $this->travelTo('2026-05-01 12:00:00');
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create(['slug' => 'soon']);
+
+        $response = $this->actingAs($author)
+            ->from(route('posts.edit', $post))
+            ->patch(route('posts.publish', $post), ['published_at' => '2026-05-10T09:30:00Z']);
+
+        $response->assertRedirect(route('posts.edit', $post));
+        expect($post->refresh())
+            ->status->toBe(PostStatus::Published)
+            ->published_at->toIso8601String()->toBe('2026-05-10T09:30:00+00:00');
+        auth()->logout();
+        $this->get(route('blog.posts.show', 'soon'))->assertNotFound();
+
+        $this->travelTo('2026-05-10 09:31:00');
+        $this->get(route('blog.posts.show', 'soon'))->assertOk();
+    });
+
+    test('backdates a post to a past date', function () {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create();
+
+        $this->actingAs($author)->patch(route('posts.publish', $post), ['published_at' => '2024-03-15T10:00:00Z']);
+
+        expect($post->refresh()->published_at->toIso8601String())->toBe('2024-03-15T10:00:00+00:00');
+    });
+
+    test('publishing now after cancelling a schedule drops the future date', function () {
+        $this->travelTo('2026-05-01 12:00:00');
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create([
+            'status' => PostStatus::Draft,
+            'published_at' => '2026-06-01 10:00:00',
+        ]);
+
+        $this->actingAs($author)->patch(route('posts.publish', $post));
+
+        expect($post->refresh()->published_at->toDateTimeString())->toBe('2026-05-01 12:00:00');
+    });
+
+    test('rejects an invalid date', function () {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create();
+
+        $response = $this->actingAs($author)->patch(route('posts.publish', $post), ['published_at' => 'amanhã']);
+
+        $response->assertInvalid(['published_at' => 'The published at field must be a valid date.']);
+        expect($post->refresh()->status)->toBe(PostStatus::Draft);
+    });
+});
+
 describe('unpublish', function () {
     test('moves a published post back to draft', function () {
         $author = User::factory()->create();
