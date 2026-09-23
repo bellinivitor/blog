@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import BlogFeedController from '@/actions/App/Http/Controllers/Blog/BlogFeedController';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import SearchDialog from '@/components/blog/SearchDialog.vue';
+import ThemeToggle from '@/components/blog/ThemeToggle.vue';
 import { dashboard } from '@/routes';
 import '../../css/blog.css';
 
@@ -28,16 +29,7 @@ const feedUrl = BlogFeedController.index().url;
                     class="flex items-baseline gap-5 text-sm text-[var(--graphite)]"
                 >
                     <SearchDialog />
-                    <a
-                        v-for="link in blog.links"
-                        :key="link.url"
-                        :href="link.url"
-                        class="hover:text-[var(--ink)]"
-                        rel="me noopener"
-                        target="_blank"
-                    >
-                        {{ link.label }}
-                    </a>
+                    <ThemeToggle />
                 </nav>
             </header>
 

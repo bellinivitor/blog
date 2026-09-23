@@ -21,6 +21,18 @@ const blog = computed(() => usePage().props.blog);
             {{ blog.headline }}
         </h1>
         <p class="mt-6 text-[var(--graphite)]">{{ blog.bio }}</p>
+        <p class="mt-5 flex flex-wrap gap-x-5 text-sm">
+            <a
+                v-for="link in blog.links"
+                :key="link.url"
+                :href="link.url"
+                class="blog-link"
+                rel="me noopener"
+                target="_blank"
+            >
+                {{ link.label }}
+            </a>
+        </p>
     </section>
 
     <PostTimeline v-if="posts.length" :posts="posts" show-head />

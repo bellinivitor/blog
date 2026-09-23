@@ -1,15 +1,16 @@
 /*
- * Public blog theme: "reviewed printout". Cool paper, ink and a ballpoint-blue
- * accent, set entirely in the Monaspace superfamily on a character grid.
+ * Public blog theme: "reviewed printout". Ink and a ballpoint-blue accent on
+ * paper, set entirely in the Monaspace superfamily on a character grid. The
+ * light paper is warm, like a book page, for long reading.
  */
 
 .blog {
-    --paper: #f4f6f9;
-    --ink: #1b2130;
-    --graphite: #5b6577;
-    --rule: #d8dde5;
+    --paper: #f7f2e6;
+    --ink: #262219;
+    --graphite: #6b6456;
+    --rule: #e2d9c4;
     --pen: #2b55e0;
-    --panel: #e9edf3;
+    --panel: #eee6d3;
 
     --font-text: 'Monaspace Neon', ui-monospace, SFMono-Regular, Menlo, monospace;
     --font-title: 'Monaspace Xenon', 'Monaspace Neon', ui-monospace, monospace;
