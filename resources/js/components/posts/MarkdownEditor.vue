@@ -192,6 +192,40 @@ onBeforeUnmount(() => {
 }
 
 /*
+ * Crepe paints the top bar icons with the outline color, which is our faint
+ * border tone; they read as disabled. Use the muted text color instead.
+ */
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-item svg,
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-chevron svg {
+    color: var(--muted-foreground);
+    fill: var(--muted-foreground);
+}
+
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-chevron svg {
+    fill: none;
+    stroke: var(--muted-foreground);
+}
+
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-item:hover svg {
+    color: var(--foreground);
+    fill: var(--foreground);
+}
+
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-item.active svg {
+    color: var(--primary);
+    fill: var(--primary);
+}
+
+/* Stroke-drawn icons (the reading one) must not be filled. */
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-item svg[stroke] {
+    fill: none;
+}
+
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-divider {
+    background: var(--border);
+}
+
+/*
  * The writing area mirrors the public post column (.blog-prose): a 68ch
  * measure in Monaspace Neon at 16px / 1.8, titles in Xenon at the same sizes,
  * so lines break where they will on the published page. The attribute
