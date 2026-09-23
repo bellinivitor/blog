@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import SearchDialog from '@/components/blog/SearchDialog.vue';
+import { dashboard } from '@/routes';
 import '../../css/blog.css';
 
 const blog = computed(() => usePage().props.blog);
@@ -43,9 +44,12 @@ const year = new Date().getFullYear();
             </main>
 
             <footer
-                class="mt-24 border-t border-[var(--rule)] py-8 text-sm text-[var(--graphite)]"
+                class="mt-24 flex items-baseline justify-between gap-6 border-t border-[var(--rule)] py-8 text-sm text-[var(--graphite)]"
             >
-                {{ blog.author }}, {{ year }}.
+                <span>{{ blog.author }}, {{ year }}.</span>
+                <Link :href="dashboard()" class="hover:text-[var(--ink)]">
+                    Painel
+                </Link>
             </footer>
         </div>
     </div>
