@@ -6,7 +6,7 @@ import type { Appearance } from '@/types';
 
 const { appearance, updateAppearance } = useAppearance();
 
-const ORDER: Appearance[] = ['system', 'light', 'dark'];
+const ORDER: Appearance[] = ['light', 'dark', 'system'];
 
 const LABELS: Record<Appearance, string> = {
     system: 'tema do sistema',
