@@ -28,28 +28,30 @@ function tagError(): string | undefined {
 
 <template>
     <div class="space-y-6">
-        <div class="grid gap-2">
-            <Label for="title">Title</Label>
-            <Input
-                id="title"
-                name="title"
-                :default-value="post?.title"
-                required
-                autofocus
-                placeholder="My new post"
-            />
-            <InputError :message="errors.title" />
-        </div>
+        <div class="grid gap-6 md:grid-cols-2">
+            <div class="grid content-start gap-2">
+                <Label for="title">Title</Label>
+                <Input
+                    id="title"
+                    name="title"
+                    :default-value="post?.title"
+                    required
+                    autofocus
+                    placeholder="My new post"
+                />
+                <InputError :message="errors.title" />
+            </div>
 
-        <div class="grid gap-2">
-            <Label for="slug">Slug</Label>
-            <Input
-                id="slug"
-                name="slug"
-                :default-value="post?.slug"
-                placeholder="Generated from the title when empty"
-            />
-            <InputError :message="errors.slug" />
+            <div class="grid content-start gap-2">
+                <Label for="slug">Slug</Label>
+                <Input
+                    id="slug"
+                    name="slug"
+                    :default-value="post?.slug"
+                    placeholder="Generated from the title when empty"
+                />
+                <InputError :message="errors.slug" />
+            </div>
         </div>
 
         <div class="grid gap-2">

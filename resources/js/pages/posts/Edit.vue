@@ -23,7 +23,7 @@ defineProps<{
 <template>
     <Head :title="`Edit ${post.title}`" />
 
-    <div class="max-w-3xl space-y-6 p-4">
+    <div class="space-y-6 p-4">
         <div class="flex items-start justify-between gap-4">
             <div class="space-y-2">
                 <Heading :title="post.title" variant="small" />
