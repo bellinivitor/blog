@@ -47,7 +47,11 @@ const year = new Date().getFullYear();
                 class="mt-24 flex items-baseline justify-between gap-6 border-t border-[var(--rule)] py-8 text-sm text-[var(--graphite)]"
             >
                 <span>{{ blog.author }}, {{ year }}.</span>
-                <Link :href="dashboard()" class="hover:text-[var(--ink)]">
+                <Link
+                    :href="dashboard()"
+                    rel="nofollow"
+                    class="hover:text-[var(--ink)]"
+                >
                     Painel
                 </Link>
             </footer>

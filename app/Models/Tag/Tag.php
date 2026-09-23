@@ -3,6 +3,7 @@
 namespace App\Models\Tag;
 
 use App\Models\DefaultModel;
+use App\Models\Post\Post;
 use Carbon\CarbonImmutable;
 use Database\Factories\Tag\TagFactory;
 use Domain\Tag\Policies\TagPolicy;
@@ -10,6 +11,7 @@ use Domain\Tag\QueryBuilders\TagQueryBuilder;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Attributes\UsePolicy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
 
@@ -34,5 +36,13 @@ class Tag extends DefaultModel
     public function newEloquentBuilder($query): TagQueryBuilder
     {
         return new TagQueryBuilder($query);
+    }
+
+    /**
+     * @return BelongsToMany<Post, $this>
+     */
+    public function posts(): BelongsToMany
+    {
+        return $this->belongsToMany(Post::class);
     }
 }
