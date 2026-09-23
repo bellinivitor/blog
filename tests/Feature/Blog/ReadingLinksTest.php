@@ -15,16 +15,13 @@ function renderedContent(TestResponse $response): string
     return $content;
 }
 
-test('links a cited reading to it on the readings page, in a new tab', function () {
+test('links a cited reading to its URL in a new tab', function () {
     $reading = Reading::factory()->create(['url' => 'https://martinfowler.com/books/refactoring.html']);
     Post::factory()->published()->create(['slug' => 'hello', 'content' => "Leia [o livro do Fowler](leitura:{$reading->id}) antes."]);
 
     $content = renderedContent($this->get(route('blog.posts.show', 'hello')));
 
-    $href = route('blog.readings.index')."#leitura-{$reading->id}";
-    expect($content)
-        ->toContain("<a target=\"_blank\" rel=\"noopener\" href=\"{$href}\">o livro do Fowler</a>")
-        ->not->toContain('martinfowler.com');
+    expect($content)->toContain('<a target="_blank" rel="noopener" href="https://martinfowler.com/books/refactoring.html">o livro do Fowler</a>');
 });
 
 test('keeps only the text when the cited reading is trashed or missing', function () {
@@ -42,16 +39,17 @@ test('keeps only the text when the cited reading is trashed or missing', functio
         ->not->toContain('leitura:');
 });
 
-test('brings the link back on the next render when the reading is restored', function () {
-    $reading = Reading::factory()->trashed()->create();
+test('follows a change of the reading URL on the next render', function () {
+    $reading = Reading::factory()->create(['url' => 'https://example.com/old']);
     Post::factory()->published()->create(['slug' => 'hello', 'content' => "Veja [isto](leitura:{$reading->id})."]);
-    expect(renderedContent($this->get(route('blog.posts.show', 'hello'))))->not->toContain('<a ');
+    $this->get(route('blog.posts.show', 'hello'));
 
     $this->travel(1)->minute();
-    $reading->restore();
+    $reading->update(['url' => 'https://example.com/new']);
 
-    expect(renderedContent($this->get(route('blog.posts.show', 'hello'))))
-        ->toContain('href="'.route('blog.readings.index')."#leitura-{$reading->id}\"");
+    $content = renderedContent($this->get(route('blog.posts.show', 'hello')));
+
+    expect($content)->toContain('href="https://example.com/new"');
 });
 
 test('leaves ordinary links untouched', function () {

@@ -1,29 +1,11 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import type { Reading } from '@/types';
 
 defineProps<{
     readings: Reading[];
 }>();
-
-/** Same anchor the post renderer uses for a cited reading (leitura-ID). */
-function anchorOf(reading: Reading): string {
-    return `leitura-${reading.id}`;
-}
-
-/**
- * A reading cited in a post opens here as /leituras#leitura-ID: bring it into
- * view once the list exists (the CSS :target rule highlights it).
- */
-onMounted(() => {
-    if (window.location.hash) {
-        document
-            .getElementById(decodeURIComponent(window.location.hash.slice(1)))
-            ?.scrollIntoView({ block: 'center' });
-    }
-});
 
 /** Where the link leads, so a reader knows before clicking. */
 function hostOf(url: string): string {
@@ -59,12 +41,7 @@ function hostOf(url: string): string {
         v-if="readings.length"
         class="max-w-[68ch] divide-y divide-[var(--rule)] border-y border-[var(--rule)]"
     >
-        <li
-            v-for="reading in readings"
-            :id="anchorOf(reading)"
-            :key="reading.id"
-            class="reading-item"
-        >
+        <li v-for="reading in readings" :key="reading.id">
             <a
                 :href="reading.url"
                 target="_blank"
@@ -80,19 +57,6 @@ function hostOf(url: string): string {
 </template>
 
 <style scoped>
-.reading-item {
-    scroll-margin-block: 6rem;
-}
-
-/* The reading a post pointed at. */
-.reading-item:target {
-    margin-inline: -1.5ch;
-    padding-inline: 1.5ch;
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--pen) 9%, transparent);
-    box-shadow: inset 3px 0 0 var(--pen);
-}
-
 .reading {
     display: flex;
     flex-wrap: wrap;

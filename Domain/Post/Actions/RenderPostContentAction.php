@@ -19,7 +19,7 @@ readonly class RenderPostContentAction
     /**
      * Bump whenever the rendering pipeline changes, so cached HTML is rebuilt.
      */
-    private const int RENDERER_VERSION = 4;
+    private const int RENDERER_VERSION = 3;
 
     public function __construct(
         private ResolveReadingLinksAction $resolveReadingLinks,
@@ -29,9 +29,8 @@ readonly class RenderPostContentAction
      * Render the post's Markdown to HTML with syntax highlighted code blocks
      * (light and dark themes) and ids on h2/h3 headings for the table of
      * contents. Raw HTML in the Markdown is escaped. Cited readings
-     * ([text](leitura:ID)) link to them on the readings page. The result is
-     * cached per post version and, when the post cites readings, per readings
-     * version.
+     * ([text](leitura:ID)) link to their current URL. The result is cached
+     * per post version and, when the post cites readings, per readings version.
      */
     public function __invoke(Post $post): string
     {
