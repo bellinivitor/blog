@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Blog;
 use App\Http\Controllers\Controller;
 use App\Models\Post\Post;
 use Domain\Post\Actions\BuildPostPageMetaAction;
+use Domain\Post\Actions\FindRelatedPostsAction;
 use Domain\Post\Actions\RenderPostContentAction;
 use Domain\Post\Resources\PublishedPostResource;
 use Domain\Shared\DataTransferObjects\PageMetaDTO;
@@ -42,6 +43,7 @@ class BlogPostController extends Controller
         string $slug,
         RenderPostContentAction $renderPostContent,
         BuildPostPageMetaAction $buildPageMeta,
+        FindRelatedPostsAction $findRelatedPosts,
     ): Response {
         $post = Post::query()
             ->published()
@@ -51,7 +53,7 @@ class BlogPostController extends Controller
 
         $previous = Post::query()->publishedBefore($post)->with('tags')->first();
         $next = Post::query()->publishedAfter($post)->with('tags')->first();
-        $related = Post::query()->relatedTo($post)->with('tags')->limit(self::RELATED_LIMIT)->get();
+        $related = $findRelatedPosts($post, self::RELATED_LIMIT);
 
         return Inertia::render('blog/Show', [
             'post' => PublishedPostResource::make($post),

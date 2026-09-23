@@ -20,6 +20,7 @@ use Illuminate\Database\Query\Builder;
  * @property string $name
  * @property string $slug
  * @property CarbonImmutable|null $deleted_at
+ * @property-read int|null $posts_count
  *
  * @method static TagQueryBuilder query()
  */

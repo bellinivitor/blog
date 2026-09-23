@@ -69,19 +69,13 @@ class PostQueryBuilder extends Builder
     }
 
     /**
-     * Published posts sharing tags with the given one, most shared tags
-     * first, then newest.
+     * Published posts, other than the given one, sharing at least one tag.
      */
-    public function relatedTo(Post $post): static
+    public function sharingTagsWith(Post $post): static
     {
-        $tagIds = $post->tags->modelKeys();
-
         $this->published()
             ->whereKeyNot($post->id)
-            ->whereHas('tags', fn (Builder $query) => $query->whereKey($tagIds))
-            ->withCount(['tags as shared_tags_count' => fn (Builder $query) => $query->whereKey($tagIds)])
-            ->orderByDesc('shared_tags_count')
-            ->orderByDesc('published_at');
+            ->whereHas('tags', fn (Builder $query) => $query->whereKey($post->tags->modelKeys()));
 
         return $this;
     }

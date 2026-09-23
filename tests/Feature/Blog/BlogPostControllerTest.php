@@ -151,9 +151,41 @@ describe('show', function () {
         $response = $this->get(route('blog.posts.show', $post->slug));
 
         $response->assertInertia(fn (Assert $page) => $page
-            ->has('related', 2)
+            ->has('related', 3)
             ->where('related.0.slug', 'two-tags')
             ->where('related.1.slug', 'one-tag')
+            ->where('related.2.slug', 'unrelated')
+        );
+    });
+
+    test('ranks a post sharing a rare tag above one sharing a common tag', function () {
+        $common = Tag::factory()->create();
+        $rare = Tag::factory()->create();
+        $post = Post::factory()->published()->hasAttached([$common, $rare])->create(['slug' => 'current']);
+        Post::factory()->published()->hasAttached($common)->create(['slug' => 'common-newer', 'published_at' => now()->subDay()]);
+        Post::factory()->published()->hasAttached($common)->count(3)->create(['published_at' => now()->subYear()]);
+        Post::factory()->published()->hasAttached($rare)->create(['slug' => 'rare-older', 'published_at' => now()->subMonth()]);
+
+        $response = $this->get(route('blog.posts.show', $post->slug));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('related.0.slug', 'rare-older')
+            ->where('related.1.slug', 'common-newer')
+        );
+    });
+
+    test('fills the related list with the latest posts when few share tags', function () {
+        $post = Post::factory()->published()->create(['slug' => 'no-tags']);
+        Post::factory()->published()->create(['slug' => 'latest', 'published_at' => now()->subHour()]);
+        Post::factory()->published()->create(['slug' => 'older', 'published_at' => now()->subWeek()]);
+        Post::factory()->create(['slug' => 'draft']);
+
+        $response = $this->get(route('blog.posts.show', $post->slug));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->has('related', 2)
+            ->where('related.0.slug', 'latest')
+            ->where('related.1.slug', 'older')
         );
     });
 
