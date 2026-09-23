@@ -7,6 +7,7 @@ use App\Models\User;
 use Domain\Post\DataTransferObjects\PostDTO;
 use Domain\Post\Enums\PostStatus;
 use Domain\Shared\Actions\GenerateUniqueSlugAction;
+use Domain\Tag\Actions\FindOrCreateTagsAction;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -14,6 +15,7 @@ readonly class StorePostAction
 {
     public function __construct(
         private GenerateUniqueSlugAction $generateUniqueSlugAction,
+        private FindOrCreateTagsAction $findOrCreateTagsAction,
     ) {}
 
     /**
@@ -37,7 +39,10 @@ readonly class StorePostAction
             $post->author()->associate($author);
             $post->save();
 
-            $post->tags()->sync($postDTO->tagIds);
+            $post->tags()->sync(array_unique([
+                ...$postDTO->tagIds,
+                ...($this->findOrCreateTagsAction)($postDTO->newTagNames),
+            ]));
 
             DB::commit();
         } catch (Throwable $throwable) {

@@ -17,8 +17,9 @@ const textareaClass =
 function tagError(): string | undefined {
     return (
         props.errors.tag_ids ??
-        Object.entries(props.errors).find(([key]) =>
-            key.startsWith('tag_ids.'),
+        Object.entries(props.errors).find(
+            ([key]) =>
+                key.startsWith('tag_ids.') || key.startsWith('new_tags.'),
         )?.[1]
     );
 }
@@ -82,6 +83,7 @@ function tagError(): string | undefined {
             <TagInput
                 id="tags"
                 name="tag_ids"
+                new-name="new_tags"
                 :tags="tags"
                 :default-selected="post?.tags"
             />

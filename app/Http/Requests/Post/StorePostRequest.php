@@ -23,6 +23,8 @@ class StorePostRequest extends FormRequest
             'content' => ['required', 'string'],
             'tag_ids' => ['nullable', 'array'],
             'tag_ids.*' => ['integer', 'distinct', Rule::exists('tags', 'id')->withoutTrashed()],
+            'new_tags' => ['nullable', 'array'],
+            'new_tags.*' => ['required', 'string', 'max:255'],
         ];
     }
 
@@ -34,6 +36,16 @@ class StorePostRequest extends FormRequest
         return [
             'slug.regex' => 'The slug may only contain lowercase letters, numbers and single hyphens.',
             'tag_ids.*.exists' => 'The selected tag does not exist.',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'new_tags.*' => 'tag name',
         ];
     }
 

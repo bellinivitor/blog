@@ -139,6 +139,30 @@ describe('store', function () {
         expect($post->tags->modelKeys())->toEqualCanonicalizing($tags->modelKeys());
     });
 
+    test('creates new tags typed in the form and attaches them', function () {
+        $author = User::factory()->create();
+        $existing = Tag::factory()->create(['name' => 'Laravel']);
+
+        $response = $this->actingAs($author)->post(route('posts.store'), validPostPayload([
+            'tag_ids' => [$existing->id],
+            'new_tags' => ['Pest', 'laravel'],
+        ]));
+
+        $post = Post::query()->sole();
+        $response->assertRedirect(route('posts.edit', $post));
+        $this->assertDatabaseCount('tags', 2);
+        expect($post->tags->pluck('name')->sort()->values()->all())->toBe(['Laravel', 'Pest']);
+    });
+
+    test('rejects a new tag name longer than 255 characters', function () {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('posts.store'), validPostPayload(['new_tags' => [str_repeat('a', 256)]]));
+
+        $response->assertInvalid(['new_tags.0' => 'The tag name field must not be greater than 255 characters.']);
+        $this->assertDatabaseCount('posts', 0);
+        $this->assertDatabaseCount('tags', 0);
+    });
+
     test('requires a title and content', function () {
         $response = $this->actingAs(User::factory()->create())
             ->post(route('posts.store'), []);
@@ -208,6 +232,15 @@ describe('update', function () {
             ->title->toBe('Updated title')
             ->slug->toBe('old');
         expect($post->tags->modelKeys())->toBe([$newTag->id]);
+    });
+
+    test('creates new tags typed while editing', function () {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create();
+
+        $this->actingAs($author)->put(route('posts.update', $post), validPostPayload(['new_tags' => ['Vue']]));
+
+        expect($post->tags()->pluck('name')->all())->toBe(['Vue']);
     });
 
     test('removes every tag when none is sent', function () {

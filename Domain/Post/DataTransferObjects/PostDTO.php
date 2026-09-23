@@ -9,6 +9,7 @@ final readonly class PostDTO implements DataTransferObjectInterface
 {
     /**
      * @param  array<int, int>  $tagIds
+     * @param  array<int, string>  $newTagNames
      */
     public function __construct(
         public string $title,
@@ -16,10 +17,11 @@ final readonly class PostDTO implements DataTransferObjectInterface
         public ?string $slug = null,
         public ?string $excerpt = null,
         public array $tagIds = [],
+        public array $newTagNames = [],
     ) {}
 
     /**
-     * @return array{title: string, content: string, slug: string|null, excerpt: string|null, tag_ids: array<int, int>}
+     * @return array{title: string, content: string, slug: string|null, excerpt: string|null, tag_ids: array<int, int>, new_tags: array<int, string>}
      */
     public function toArray(): array
     {
@@ -29,6 +31,7 @@ final readonly class PostDTO implements DataTransferObjectInterface
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'tag_ids' => $this->tagIds,
+            'new_tags' => $this->newTagNames,
         ];
     }
 
@@ -40,6 +43,7 @@ final readonly class PostDTO implements DataTransferObjectInterface
             slug: $request->validated('slug'),
             excerpt: $request->validated('excerpt'),
             tagIds: array_map('intval', $request->validated('tag_ids', [])),
+            newTagNames: $request->validated('new_tags', []),
         );
     }
 
@@ -54,6 +58,7 @@ final readonly class PostDTO implements DataTransferObjectInterface
             slug: $data['slug'] ?? null,
             excerpt: $data['excerpt'] ?? null,
             tagIds: array_map('intval', $data['tag_ids'] ?? []),
+            newTagNames: $data['new_tags'] ?? [],
         );
     }
 }

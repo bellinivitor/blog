@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { X } from '@lucide/vue';
+import { Plus, X } from '@lucide/vue';
 import { computed, ref } from 'vue';
 import { Badge } from '@/components/ui/badge';
 import type { Tag } from '@/types';
@@ -8,10 +8,12 @@ const props = defineProps<{
     tags: Tag[];
     defaultSelected?: Tag[];
     name: string;
+    newName: string;
     id?: string;
 }>();
 
 const selected = ref<Tag[]>([...(props.defaultSelected ?? [])]);
+const newTags = ref<string[]>([]);
 const query = ref('');
 const isOpen = ref(false);
 const highlightedIndex = ref(0);
@@ -25,6 +27,32 @@ const suggestions = computed(() => {
             (term === '' || tag.name.toLowerCase().includes(term)),
     );
 });
+
+const trimmedQuery = computed(() => query.value.trim());
+
+const canCreate = computed(() => {
+    const term = trimmedQuery.value.toLowerCase();
+
+    return (
+        term !== '' &&
+        !props.tags.some((tag) => tag.name.toLowerCase() === term) &&
+        !newTags.value.some((name) => name.toLowerCase() === term)
+    );
+});
+
+const optionCount = computed(
+    () => suggestions.value.length + (canCreate.value ? 1 : 0),
+);
+
+function create(): void {
+    newTags.value.push(trimmedQuery.value);
+    query.value = '';
+    highlightedIndex.value = 0;
+}
+
+function removeNew(name: string): void {
+    newTags.value = newTags.value.filter((item) => item !== name);
+}
 
 function select(tag: Tag): void {
     selected.value.push(tag);
@@ -42,7 +70,7 @@ function onKeydown(event: KeyboardEvent): void {
         isOpen.value = true;
         highlightedIndex.value = Math.min(
             highlightedIndex.value + 1,
-            suggestions.value.length - 1,
+            optionCount.value - 1,
         );
     } else if (event.key === 'ArrowUp') {
         event.preventDefault();
@@ -51,13 +79,19 @@ function onKeydown(event: KeyboardEvent): void {
         event.preventDefault();
         const tag = suggestions.value[highlightedIndex.value];
 
-        if (isOpen.value && tag) {
+        if (tag) {
             select(tag);
+        } else if (canCreate.value) {
+            create();
         }
     } else if (event.key === 'Escape') {
         isOpen.value = false;
     } else if (event.key === 'Backspace' && query.value === '') {
-        selected.value.pop();
+        if (newTags.value.length) {
+            newTags.value.pop();
+        } else {
+            selected.value.pop();
+        }
     }
 }
 
@@ -90,15 +124,36 @@ function onInput(): void {
                 <input type="hidden" :name="`${name}[]`" :value="tag.id" />
             </Badge>
 
+            <Badge
+                v-for="tagName in newTags"
+                :key="`new-${tagName}`"
+                variant="outline"
+                class="gap-1 border-dashed pr-1"
+            >
+                {{ tagName }}
+                <span class="text-muted-foreground">(new)</span>
+                <button
+                    type="button"
+                    class="rounded-full p-0.5 hover:bg-foreground/10"
+                    :aria-label="`Remove ${tagName}`"
+                    @click="removeNew(tagName)"
+                >
+                    <X />
+                </button>
+                <input type="hidden" :name="`${newName}[]`" :value="tagName" />
+            </Badge>
+
             <input
                 :id="id"
                 v-model="query"
                 type="text"
                 role="combobox"
                 autocomplete="off"
-                :aria-expanded="isOpen && suggestions.length > 0"
+                :aria-expanded="isOpen && optionCount > 0"
                 class="min-w-32 flex-1 bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground md:text-sm"
-                :placeholder="selected.length ? '' : 'Type to add tags'"
+                :placeholder="
+                    selected.length || newTags.length ? '' : 'Type to add tags'
+                "
                 @input="onInput"
                 @focus="isOpen = true"
                 @blur="isOpen = false"
@@ -124,10 +179,23 @@ function onInput(): void {
                 {{ tag.name }}
             </li>
             <li
-                v-if="suggestions.length === 0"
+                v-if="canCreate"
+                role="option"
+                :aria-selected="highlightedIndex === suggestions.length"
+                class="flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5"
+                :class="highlightedIndex === suggestions.length && 'bg-accent'"
+                @mousedown.prevent="create"
+                @mouseenter="highlightedIndex = suggestions.length"
+            >
+                <Plus class="size-4" /> Create “{{ trimmedQuery }}”
+            </li>
+            <li
+                v-if="optionCount === 0"
                 class="px-2 py-1.5 text-muted-foreground"
             >
-                {{ tags.length ? 'No matching tags.' : 'No tags yet.' }}
+                {{
+                    tags.length ? 'No matching tags.' : 'Type to create a tag.'
+                }}
             </li>
         </ul>
     </div>
