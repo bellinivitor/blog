@@ -31,17 +31,11 @@ const years = computed(() => {
 <template>
     <ol class="timeline">
         <li v-for="group in years" :key="group.year">
-            <h2 class="timeline-row timeline-year">
-                <span class="timeline-cell" />
-                <span class="timeline-cell timeline-rail" aria-hidden="true">
-                    <span class="timeline-branch" />
-                </span>
-                <span class="timeline-cell timeline-year-label">
-                    <span class="timeline-year-number">{{ group.year }}</span>
-                    <span class="timeline-year-count">
-                        {{ group.posts.length }}
-                        {{ group.posts.length === 1 ? 'post' : 'posts' }}
-                    </span>
+            <h2 class="timeline-year">
+                <span class="timeline-year-number">{{ group.year }}</span>
+                <span class="timeline-year-count">
+                    {{ group.posts.length }}
+                    {{ group.posts.length === 1 ? 'post' : 'posts' }}
                 </span>
             </h2>
 
@@ -177,29 +171,23 @@ const years = computed(() => {
     color: var(--pen);
 }
 
-/* A new year opens a section: extra room above, the year set in the reading
-   column, and a hairline branching off the rail to the end of the column. */
+/* A new year is a centred divider, apart from the rail: each year gets its
+   own rail segment, from its first post to its last. */
 .timeline-year {
-    --year-gap: 2.25rem;
-}
-
-.timeline > li:first-child .timeline-year {
-    --year-gap: 0rem;
-}
-
-.timeline-year > .timeline-cell {
-    padding-top: var(--year-gap);
-    padding-bottom: 0.75rem;
-}
-
-.timeline-year-label {
     display: flex;
     align-items: baseline;
-    gap: 2ch;
+    justify-content: center;
+    gap: 1.5ch;
+    padding: 2.25rem 0 1rem;
     line-height: 1.75rem;
 }
 
-.timeline-year-label::after {
+.timeline > li:first-child .timeline-year {
+    padding-top: 0;
+}
+
+.timeline-year::before,
+.timeline-year::after {
     content: '';
     flex: 1;
     align-self: center;
@@ -234,16 +222,15 @@ const years = computed(() => {
     background: color-mix(in srgb, var(--pen) 45%, transparent);
 }
 
-.timeline > li:first-child > .timeline-year .timeline-rail::before {
-    top: 0.875rem;
+.timeline-post:first-child .timeline-rail::before {
+    top: calc(var(--row-pad) + 0.875rem);
 }
 
-.timeline > li:last-child li:last-child .timeline-rail::before {
+.timeline-post:last-child .timeline-rail::before {
     bottom: calc(100% - var(--row-pad) - 0.875rem);
 }
 
-.timeline-node,
-.timeline-branch {
+.timeline-node {
     position: absolute;
     left: 50%;
     top: 0.875rem;
@@ -252,21 +239,6 @@ const years = computed(() => {
 
 .timeline-post .timeline-node {
     top: calc(var(--row-pad) + 0.875rem);
-}
-
-.timeline-year .timeline-branch {
-    top: calc(var(--year-gap) + 0.875rem);
-}
-
-/* Short connector from the year marker into the reading column. */
-.timeline-year .timeline-rail::after {
-    content: '';
-    position: absolute;
-    top: calc(var(--year-gap) + 0.875rem);
-    left: 50%;
-    right: 0;
-    height: 1px;
-    background: color-mix(in srgb, var(--pen) 45%, transparent);
 }
 
 .timeline-node {
@@ -285,14 +257,6 @@ const years = computed(() => {
     box-shadow:
         0 0 0 3px var(--paper),
         0 0 0 4px color-mix(in srgb, var(--pen) 45%, transparent);
-}
-
-.timeline-branch {
-    z-index: 1;
-    width: 0.625rem;
-    height: 0.625rem;
-    background: var(--pen);
-    rotate: 45deg;
 }
 
 .timeline-title {
