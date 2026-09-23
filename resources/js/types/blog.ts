@@ -5,6 +5,7 @@ export type PublishedPost = {
     slug: string;
     excerpt: string | null;
     published_at: string;
+    revised_at: string | null;
     reading_minutes: number;
     tags: Tag[];
 };

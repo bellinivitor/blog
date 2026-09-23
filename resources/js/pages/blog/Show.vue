@@ -58,6 +58,12 @@ useArticleEnhancements(body);
                         {{ formatLongDate(post.published_at) }}
                     </time>
                     <span v-else>Não publicado</span>
+                    <span v-if="post.revised_at">
+                        atualizado em
+                        <time :datetime="post.revised_at">{{
+                            formatLongDate(post.revised_at)
+                        }}</time>
+                    </span>
                     <span>{{ post.reading_minutes }} min de leitura</span>
                     <Link
                         v-for="tag in post.tags"

@@ -52,3 +52,15 @@ test('admin pages do not advertise the feed', function () {
 
     $response->assertDontSee('application/rss+xml', false);
 });
+
+test('dates revised posts and the channel by their latest revision', function () {
+    Post::factory()->published()->create(['published_at' => '2026-01-10 10:00:00', 'revised_at' => '2026-02-20 15:30:00']);
+    Post::factory()->published()->create(['published_at' => '2026-02-01 10:00:00']);
+
+    $channel = simplexml_load_string($this->get(route('blog.feed'))->getContent())->channel;
+    $updated = fn (int $index): string => (string) $channel->item[$index]->children('http://www.w3.org/2005/Atom')->updated;
+
+    expect((string) $channel->lastBuildDate)->toBe('Fri, 20 Feb 2026 15:30:00 +0000')
+        ->and($updated(1))->toBe('2026-02-20T15:30:00+00:00')
+        ->and($updated(0))->toBe('');
+});

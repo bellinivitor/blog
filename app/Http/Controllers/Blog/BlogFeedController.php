@@ -30,7 +30,7 @@ class BlogFeedController extends Controller
         return response()
             ->view('blog.feed', [
                 'items' => $items,
-                'lastBuildDate' => $posts->max('updated_at') ?? now(),
+                'lastBuildDate' => $posts->map(fn (Post $post) => $post->revised_at ?? $post->published_at)->max() ?? now(),
             ])
             ->header('Content-Type', 'application/rss+xml; charset=UTF-8');
     }

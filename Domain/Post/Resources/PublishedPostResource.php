@@ -26,6 +26,7 @@ class PublishedPostResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'published_at' => $this->published_at?->toIso8601String(),
+            'revised_at' => $this->revised_at?->toIso8601String(),
             'reading_minutes' => $this->readingMinutes(),
             'tags' => TagResource::collection($this->whenLoaded('tags')),
         ];

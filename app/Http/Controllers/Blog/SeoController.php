@@ -27,7 +27,7 @@ class SeoController extends Controller
         $posts = Post::query()
             ->published()
             ->orderByDesc('published_at')
-            ->get(['slug', 'published_at', 'updated_at']);
+            ->get(['slug', 'published_at', 'revised_at']);
 
         $tags = Tag::query()
             ->withPublishedPosts()

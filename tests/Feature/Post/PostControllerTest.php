@@ -266,6 +266,36 @@ describe('update', function () {
 
         expect($post->tags()->count())->toBe(0);
     });
+
+    test('marks a text change as a revision once the post has been out for a day', function () {
+        $this->freezeSecond();
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->published()->create([
+            'published_at' => now()->subDays(2),
+            'content' => '# Old',
+        ]);
+
+        $this->actingAs($author)->put(route('posts.update', $post), validPostPayload(['title' => $post->title]));
+
+        expect($post->refresh()->revised_at?->equalTo(now()))->toBeTrue();
+    });
+
+    test('does not mark a revision for drafts, same-day fixes or unchanged text', function (array $state, string $content) {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create(['content' => '# Hello', ...$state]);
+
+        $this->actingAs($author)->put(route('posts.update', $post), validPostPayload([
+            'title' => $post->title,
+            'content' => $content,
+            'excerpt' => 'Only the excerpt changed.',
+        ]));
+
+        expect($post->refresh()->revised_at)->toBeNull();
+    })->with([
+        'draft' => [['status' => PostStatus::Draft, 'published_at' => null], '# Changed'],
+        'published today' => [['status' => PostStatus::Published, 'published_at' => now()->subHours(3)], '# Changed'],
+        'unchanged text' => [['status' => PostStatus::Published, 'published_at' => now()->subDays(2)], '# Hello'],
+    ]);
 });
 
 describe('destroy', function () {

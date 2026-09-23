@@ -30,7 +30,7 @@ readonly class BuildPostPageMetaAction
             url: route('blog.posts.show', $post->slug),
             type: 'article',
             publishedAt: $post->published_at,
-            modifiedAt: $post->updated_at,
+            modifiedAt: $post->revised_at,
             tags: $post->tags->map(fn (Tag $tag): string => $tag->name)->all(),
         );
     }

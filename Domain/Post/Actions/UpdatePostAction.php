@@ -4,6 +4,7 @@ namespace Domain\Post\Actions;
 
 use App\Models\Post\Post;
 use Domain\Post\DataTransferObjects\PostDTO;
+use Domain\Post\Enums\PostStatus;
 use Domain\Shared\Actions\GenerateUniqueSlugAction;
 use Domain\Tag\Actions\FindOrCreateTagsAction;
 use Illuminate\Support\Facades\DB;
@@ -31,6 +32,11 @@ readonly class UpdatePostAction
                 'excerpt' => $postDTO->excerpt,
                 'content' => $postDTO->content,
             ]);
+
+            if ($this->isRevision($post)) {
+                $post->revised_at = now();
+            }
+
             $post->save();
 
             $post->tags()->sync(array_unique([
@@ -46,5 +52,16 @@ readonly class UpdatePostAction
         }
 
         return $post;
+    }
+
+    /**
+     * A change to the text of a post readers have already seen. Fixes made
+     * on the day it went out are part of publishing, not a revision.
+     */
+    private function isRevision(Post $post): bool
+    {
+        return $post->status === PostStatus::Published
+            && $post->published_at?->addDay()->isPast()
+            && $post->isDirty(['title', 'content']);
     }
 }

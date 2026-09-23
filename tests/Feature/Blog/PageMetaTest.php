@@ -3,6 +3,7 @@
 use App\Models\Post\Post;
 use App\Models\Tag\Tag;
 use Domain\Post\Enums\PostStatus;
+use Inertia\Testing\AssertableInertia as Assert;
 
 test('a post page renders its title, description and article open graph tags', function () {
     $tag = Tag::factory()->create(['name' => 'Laravel', 'slug' => 'laravel']);
@@ -65,4 +66,25 @@ test('the home and tag pages describe themselves as websites', function () {
 
 test('admin pages render no open graph tags', function () {
     $this->get(route('login'))->assertDontSee('og:title', false);
+});
+
+test('a revised post shows and reports its revision date instead of its last save', function () {
+    $post = Post::factory()->published()->create([
+        'slug' => 'revisado',
+        'published_at' => '2026-01-10 10:00:00',
+        'revised_at' => '2026-02-20 15:30:00',
+    ]);
+    $post->touch();
+
+    $this->get(route('blog.posts.show', 'revisado'))
+        ->assertSee('<meta property="article:modified_time" content="2026-02-20T15:30:00+00:00">', false)
+        ->assertInertia(fn (Assert $page) => $page->where('post.revised_at', '2026-02-20T15:30:00+00:00'));
+});
+
+test('a post never revised reports no modified time', function () {
+    Post::factory()->published()->create(['slug' => 'intocado']);
+
+    $this->get(route('blog.posts.show', 'intocado'))
+        ->assertDontSee('article:modified_time', false)
+        ->assertInertia(fn (Assert $page) => $page->where('post.revised_at', null));
 });

@@ -31,6 +31,20 @@ describe('sitemap', function () {
         expect($xml)->not->toBeFalse();
         expect($xml->url)->toHaveCount(4);
     });
+
+    test('dates each post by its revision, or its publication when never revised', function () {
+        Post::factory()->published()->create(['slug' => 'revisado', 'published_at' => '2026-01-10 10:00:00', 'revised_at' => '2026-02-20 15:30:00']);
+        Post::factory()->published()->create(['slug' => 'original', 'published_at' => '2026-01-05 09:00:00']);
+
+        $xml = simplexml_load_string($this->get(route('sitemap'))->getContent());
+        $lastmods = [];
+        foreach ($xml->url as $url) {
+            $lastmods[(string) $url->loc] = (string) $url->lastmod;
+        }
+
+        expect($lastmods[route('blog.posts.show', 'revisado')])->toBe('2026-02-20T15:30:00+00:00')
+            ->and($lastmods[route('blog.posts.show', 'original')])->toBe('2026-01-05T09:00:00+00:00');
+    });
 });
 
 test('robots.txt points to the sitemap and disallows the admin', function () {

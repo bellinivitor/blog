@@ -16,7 +16,7 @@
 @foreach ($posts as $post)
     <url>
         <loc>{{ route('blog.posts.show', $post->slug) }}</loc>
-        <lastmod>{{ $post->updated_at?->toAtomString() }}</lastmod>
+        <lastmod>{{ ($post->revised_at ?? $post->published_at)->toAtomString() }}</lastmod>
     </url>
 @endforeach
 @foreach ($tags as $tag)

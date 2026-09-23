@@ -14,6 +14,9 @@
             <link>{{ route('blog.posts.show', $post->slug) }}</link>
             <guid isPermaLink="true">{{ route('blog.posts.show', $post->slug) }}</guid>
             <pubDate>{{ $post->published_at->toRssString() }}</pubDate>
+@if ($post->revised_at)
+            <atom:updated>{{ $post->revised_at->toAtomString() }}</atom:updated>
+@endif
 @if ($post->excerpt)
             <description>{{ $post->excerpt }}</description>
 @endif

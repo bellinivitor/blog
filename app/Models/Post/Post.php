@@ -32,6 +32,7 @@ use Illuminate\Database\Query\Builder;
  * @property string|null $search_content
  * @property PostStatus $status
  * @property CarbonImmutable|null $published_at
+ * @property CarbonImmutable|null $revised_at
  * @property int $views_count
  * @property CarbonImmutable|null $deleted_at
  * @property-read User $author
@@ -70,6 +71,7 @@ class Post extends DefaultModel
         return [
             'status' => PostStatus::class,
             'published_at' => 'immutable_datetime',
+            'revised_at' => 'immutable_datetime',
         ];
     }
 
