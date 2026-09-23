@@ -14,9 +14,17 @@ readonly class ResolveReadingLinksAction
     public const string SCHEME = 'leitura:';
 
     /**
-     * Point each reading link of a parsed post at the reading's current URL,
-     * opening in a new tab. A link to a missing or trashed reading keeps only
-     * its text, so readers never meet a broken link.
+     * Anchor of a reading on the public readings page.
+     */
+    public static function anchor(int $readingId): string
+    {
+        return "leitura-{$readingId}";
+    }
+
+    /**
+     * Point each reading link of a parsed post at that reading on the blog's
+     * readings page, opening in a new tab. A link to a missing or trashed
+     * reading keeps only its text, so readers never meet a broken link.
      */
     public function __invoke(Document $document): void
     {
@@ -32,20 +40,22 @@ readonly class ResolveReadingLinksAction
             return;
         }
 
-        $urls = Reading::query()
+        $existingIds = Reading::query()
             ->whereKey(array_map($this->readingId(...), $links))
-            ->pluck('url', 'id');
+            ->pluck('id')
+            ->all();
+        $readingsPage = route('blog.readings.index');
 
         foreach ($links as $link) {
-            $url = $urls->get($this->readingId($link));
+            $readingId = $this->readingId($link);
 
-            if ($url === null) {
+            if (! in_array($readingId, $existingIds, true)) {
                 $this->unwrap($link);
 
                 continue;
             }
 
-            $link->setUrl($url);
+            $link->setUrl($readingsPage.'#'.self::anchor($readingId));
             $link->data->set('attributes/target', '_blank');
             $link->data->set('attributes/rel', 'noopener');
         }
