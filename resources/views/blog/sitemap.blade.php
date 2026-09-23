@@ -7,6 +7,12 @@
         <lastmod>{{ $lastPublishedAt->toAtomString() }}</lastmod>
 @endif
     </url>
+    <url>
+        <loc>{{ route('blog.readings.index') }}</loc>
+@if ($lastReadingAt)
+        <lastmod>{{ $lastReadingAt->toAtomString() }}</lastmod>
+@endif
+    </url>
 @foreach ($posts as $post)
     <url>
         <loc>{{ route('blog.posts.show', $post->slug) }}</loc>

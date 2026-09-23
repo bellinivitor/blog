@@ -4,7 +4,7 @@ use App\Models\Post\Post;
 use App\Models\Tag\Tag;
 
 describe('sitemap', function () {
-    test('lists the home, published posts and tags with published posts', function () {
+    test('lists the home, readings, published posts and tags with published posts', function () {
         $laravel = Tag::factory()->create(['slug' => 'laravel']);
         $draftOnly = Tag::factory()->create(['slug' => 'rascunho']);
         Post::factory()->published()->hasAttached($laravel)->create(['slug' => 'publicado']);
@@ -15,6 +15,7 @@ describe('sitemap', function () {
         $response->assertOk()
             ->assertHeader('Content-Type', 'application/xml; charset=UTF-8')
             ->assertSee('<loc>'.route('home').'</loc>', false)
+            ->assertSee('<loc>'.route('blog.readings.index').'</loc>', false)
             ->assertSee('<loc>'.route('blog.posts.show', 'publicado').'</loc>', false)
             ->assertSee('<loc>'.route('blog.tags.show', 'laravel').'</loc>', false)
             ->assertDontSee('nao-publicado')
@@ -28,7 +29,7 @@ describe('sitemap', function () {
 
         $xml = simplexml_load_string($response->getContent());
         expect($xml)->not->toBeFalse();
-        expect($xml->url)->toHaveCount(3);
+        expect($xml->url)->toHaveCount(4);
     });
 });
 

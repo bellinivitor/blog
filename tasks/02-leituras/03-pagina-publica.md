@@ -1,6 +1,6 @@
 # Página pública de leituras
 
-> Status: todo · Ordem: 03 · Depende de: 01
+> Status: done · Ordem: 03 · Depende de: 01
 
 ## Objetivo
 
@@ -13,10 +13,10 @@ Página `/leituras` no visual do blog, acessível pelo rodapé.
 
 ## Critérios de aceite
 
-- [ ] Lista leituras não excluídas, mais recentes primeiro; cada uma é link com `target="_blank" rel="noopener"`.
-- [ ] Estado vazio quando não há leituras.
-- [ ] Link "Leituras" no rodapé do blog.
-- [ ] `/leituras` no sitemap.
+- [x] Lista leituras não excluídas, mais recentes primeiro; cada uma é link com `target="_blank" rel="noopener"`.
+- [x] Estado vazio quando não há leituras.
+- [x] Link "Leituras" no rodapé do blog.
+- [x] `/leituras` no sitemap.
 
 ## Fora de escopo
 
@@ -24,7 +24,7 @@ Página `/leituras` no visual do blog, acessível pelo rodapé.
 
 ## Definição de pronto
 
-- [ ] Testes escritos e passando (suíte completa sem quebrar)
-- [ ] Testes de mutação nos arquivos tocados (ex.: Infection sobre o diff): mutantes escapados relevantes mortos e MSI ≥ limite do projeto (ignore equivalentes; foque no domínio, não em boilerplate)
-- [ ] Segue os padrões do projeto (contrato do CLAUDE.md)
-- [ ] Sem segredos, sem comando destrutivo, sem mudança de dependência
+- [x] Testes escritos e passando (suíte completa sem quebrar)
+- [ ] ~~Testes de mutação~~ — Infection não instalado (ex.: Infection sobre o diff): mutantes escapados relevantes mortos e MSI ≥ limite do projeto (ignore equivalentes; foque no domínio, não em boilerplate)
+- [x] Segue os padrões do projeto (contrato do CLAUDE.md)
+- [x] Sem segredos, sem comando destrutivo, sem mudança de dependência

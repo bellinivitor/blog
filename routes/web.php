@@ -3,6 +3,7 @@
 use App\Http\Controllers\Blog\BlogFeedController;
 use App\Http\Controllers\Blog\BlogPostController;
 use App\Http\Controllers\Blog\BlogPrivacyController;
+use App\Http\Controllers\Blog\BlogReadingController;
 use App\Http\Controllers\Blog\BlogSearchController;
 use App\Http\Controllers\Blog\BlogTagController;
 use App\Http\Controllers\Blog\SeoController;
@@ -58,6 +59,7 @@ Route::get('search', [BlogSearchController::class, 'index'])
     ->middleware('throttle:60,1')
     ->name('blog.search');
 Route::get('tags/{tag:slug}', [BlogTagController::class, 'show'])->name('blog.tags.show');
+Route::get('leituras', [BlogReadingController::class, 'index'])->name('blog.readings.index');
 Route::get('privacidade', [BlogPrivacyController::class, 'show'])->name('blog.privacy');
 
 // Addresses used before posts moved to the root and the panel to /admin.

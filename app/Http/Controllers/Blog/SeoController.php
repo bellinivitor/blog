@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Blog;
 
 use App\Http\Controllers\Controller;
 use App\Models\Post\Post;
+use App\Models\Reading\Reading;
 use App\Models\Tag\Tag;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Response;
 
 class SeoController extends Controller
@@ -17,8 +19,8 @@ class SeoController extends Controller
     private const array PRIVATE_PATHS = ['/admin'];
 
     /**
-     * XML sitemap of the public blog: home, published posts and tags that
-     * have at least one published post.
+     * XML sitemap of the public blog: home, readings, published posts and
+     * tags that have at least one published post.
      */
     public function sitemap(): Response
     {
@@ -32,11 +34,14 @@ class SeoController extends Controller
             ->orderBy('slug')
             ->get(['slug', 'updated_at']);
 
+        $lastReadingAt = Reading::query()->max('updated_at');
+
         return response()
             ->view('blog.sitemap', [
                 'posts' => $posts,
                 'tags' => $tags,
                 'lastPublishedAt' => $posts->max('updated_at'),
+                'lastReadingAt' => $lastReadingAt !== null ? CarbonImmutable::parse($lastReadingAt) : null,
             ])
             ->header('Content-Type', 'application/xml; charset=UTF-8');
     }

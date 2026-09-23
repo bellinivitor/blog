@@ -4,6 +4,7 @@ import { computed } from 'vue';
 import BlogFeedController from '@/actions/App/Http/Controllers/Blog/BlogFeedController';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import BlogPrivacyController from '@/actions/App/Http/Controllers/Blog/BlogPrivacyController';
+import BlogReadingController from '@/actions/App/Http/Controllers/Blog/BlogReadingController';
 import CookieNotice from '@/components/blog/CookieNotice.vue';
 import SearchDialog from '@/components/blog/SearchDialog.vue';
 import ThemeToggle from '@/components/blog/ThemeToggle.vue';
@@ -44,6 +45,12 @@ const feedUrl = BlogFeedController.index().url;
             >
                 <span>{{ blog.author }}, {{ year }}.</span>
                 <span class="flex gap-5">
+                    <Link
+                        :href="BlogReadingController.index()"
+                        class="hover:text-[var(--ink)]"
+                    >
+                        Leituras
+                    </Link>
                     <a :href="feedUrl" class="hover:text-[var(--ink)]">RSS</a>
                     <Link
                         :href="BlogPrivacyController.show()"
