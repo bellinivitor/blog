@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import ReadingController from '@/actions/App/Http/Controllers/ReadingController';
 import {
     Dialog,
     DialogContent,
@@ -9,9 +8,8 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { useReadingSearch } from '@/composables/useReadingSearch';
 import type { Reading } from '@/types';
-
-const DEBOUNCE_MS = 200;
 
 const open = defineModel<boolean>('open', { required: true });
 
@@ -20,60 +18,23 @@ const emit = defineEmits<{
 }>();
 
 const term = ref('');
-const results = ref<Reading[]>([]);
 const highlighted = ref(0);
-const loading = ref(false);
-const failed = ref(false);
+const { results, loading, failed, search, cancel } = useReadingSearch();
 
-let controller: AbortController | null = null;
-let timer: ReturnType<typeof setTimeout> | undefined;
-
-async function search(value: string): Promise<void> {
-    controller?.abort();
-    controller = new AbortController();
-    loading.value = true;
-    failed.value = false;
-
-    try {
-        const response = await fetch(
-            ReadingController.search({ query: { search: value || undefined } })
-                .url,
-            {
-                headers: { Accept: 'application/json' },
-                signal: controller.signal,
-            },
-        );
-
-        if (!response.ok) {
-            throw new Error(`Reading search failed with ${response.status}`);
-        }
-
-        results.value = (await response.json()) as Reading[];
-        highlighted.value = 0;
-    } catch (error) {
-        if ((error as Error).name !== 'AbortError') {
-            failed.value = true;
-            results.value = [];
-        }
-    } finally {
-        loading.value = false;
-    }
-}
+watch(results, () => {
+    highlighted.value = 0;
+});
 
 watch(open, (isOpen) => {
     if (isOpen) {
         term.value = '';
-        void search('');
+        search('');
     } else {
-        controller?.abort();
-        clearTimeout(timer);
+        cancel();
     }
 });
 
-watch(term, (value) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => void search(value.trim()), DEBOUNCE_MS);
-});
+watch(term, search);
 
 function choose(reading: Reading): void {
     open.value = false;

@@ -2,12 +2,13 @@
 import { Crepe } from '@milkdown/crepe';
 import '@milkdown/crepe/theme/common/style.css';
 import { useHttp } from '@inertiajs/vue3';
-import type { Ctx } from '@milkdown/kit/ctx';
 import type { EditorView } from '@milkdown/kit/prose/view';
 import { onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue';
 import { toast } from 'vue-sonner';
 import PostImageController from '@/actions/App/Http/Controllers/PostImageController';
 import ReadingPicker from '@/components/posts/ReadingPicker.vue';
+import ReadingSuggestions from '@/components/posts/ReadingSuggestions.vue';
+import { useReadingMention } from '@/composables/useReadingMention';
 import type { Reading } from '@/types';
 
 /** Lucide "book-open", in the 24px format of Crepe's own toolbar icons. */
@@ -42,32 +43,49 @@ async function uploadImage(file: File): Promise<string> {
 }
 
 const isPickingReading = ref(false);
-let editorCtx: Ctx | null = null;
+let editorView: EditorView | null = null;
+
+/** A cited reading: [text](leitura:ID), resolved to its URL on render. */
+function readingLink(view: EditorView, reading: Reading) {
+    return view.state.schema.marks.link.create({
+        href: `leitura:${reading.id}`,
+    });
+}
 
 /**
- * Cite a reading as a [text](leitura:ID) link, resolved to the reading's URL
- * when the post is rendered: the selection becomes the link text, or the
+ * From the toolbar picker: the selection becomes the link text, or the
  * reading's title is inserted when nothing is selected.
  */
 function citeReading(reading: Reading): void {
-    if (!editorCtx) {
+    if (!editorView) {
         return;
     }
 
-    const view = editorCtx.get<EditorView, 'editorView'>('editorView');
-    const { state } = view;
+    const { state } = editorView;
     const { from, to, empty } = state.selection;
-    const link = state.schema.marks.link.create({
-        href: `leitura:${reading.id}`,
-    });
+    const link = readingLink(editorView, reading);
 
-    view.dispatch(
+    editorView.dispatch(
         empty
             ? state.tr.insert(from, state.schema.text(reading.title, [link]))
             : state.tr.addMark(from, to, link),
     );
-    view.focus();
+    editorView.focus();
 }
+
+/** From the @ autocomplete: "@term" becomes the reading's title, linked. */
+const readingMention = useReadingMention((view, mention, reading) => {
+    const { state } = view;
+    const tr = state.tr.replaceWith(
+        mention.from,
+        mention.to,
+        state.schema.text(reading.title, [readingLink(view, reading)]),
+    );
+
+    // The link mark does not extend, so writing carries on as plain text.
+    view.dispatch(tr.insertText(' '));
+    view.focus();
+});
 
 let crepe: Crepe | null = null;
 
@@ -89,8 +107,7 @@ onMounted(async () => {
                     builder.getGroup('insert').addItem('reading', {
                         icon: READING_ICON,
                         active: () => false,
-                        onRun: (ctx) => {
-                            editorCtx = ctx;
+                        onRun: () => {
                             isPickingReading.value = true;
                         },
                     });
@@ -110,6 +127,11 @@ onMounted(async () => {
     });
 
     await crepe.create();
+
+    editorView = crepe.editor.action((ctx) =>
+        ctx.get<EditorView, 'editorView'>('editorView'),
+    );
+    readingMention.attach(editorView);
 });
 
 onBeforeUnmount(() => {
@@ -122,6 +144,15 @@ onBeforeUnmount(() => {
         <div ref="root" />
         <input type="hidden" :name="name" :value="markdown" />
         <ReadingPicker v-model:open="isPickingReading" @select="citeReading" />
+        <ReadingSuggestions
+            v-if="readingMention.mention.value"
+            :readings="readingMention.results.value"
+            :highlighted="readingMention.highlighted.value"
+            :loading="readingMention.loading.value"
+            :position="readingMention.mention.value.position"
+            @highlight="readingMention.highlighted.value = $event"
+            @select="readingMention.insert"
+        />
     </div>
 </template>
 
