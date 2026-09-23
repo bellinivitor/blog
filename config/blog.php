@@ -29,4 +29,20 @@ return [
         ['label' => 'LinkedIn', 'url' => 'https://www.linkedin.com/in/bellinivitor/'],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Owner account
+    |--------------------------------------------------------------------------
+    |
+    | Login used by OwnerUserSeeder to create the author's account. Unlike
+    | the texts above, these are credentials: they only come from the
+    | environment and must never be committed.
+    |
+    */
+
+    'owner' => [
+        'email' => env('BLOG_OWNER_EMAIL'),
+        'password' => env('BLOG_OWNER_PASSWORD'),
+    ],
+
 ];
