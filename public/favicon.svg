@@ -1,7 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <style>
-        path { fill: #171717; }
-        @media (prefers-color-scheme: dark) { path { fill: #fafafa; } }
-    </style>
-    <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Zm7 1.75V9h5.25L13 3.75ZM7.5 12.5h9V14h-9v-1.5Zm0 3.5h6v1.5h-6V16Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+    <rect width="32" height="32" rx="7" fill="#262626"/>
+    <path d="M14.56 25h2.93l4.27-15.67 1.37-.64V7h-5.27v1.69l1.28.59-2.6 10.67h-.08l-2.54-10.8 1.01-.46V7H8.87v1.69l1.36.63Z" fill="#f7f2e6"/>
 </svg>
