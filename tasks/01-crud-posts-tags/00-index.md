@@ -1,17 +1,17 @@
 # 01 — CRUD de Posts e Tags (admin)
 
-> Status: doing
+> Status: done
 
 ## Objetivo
 Gerenciar posts e tags do blog pessoal na área logada, com telas Inertia/Vue e backend seguindo a arquitetura domain-driven (`docs/architecture/AGENTS.md`).
 
 ## Critérios de aceite
-- [ ] Tags: criar, listar, editar, excluir (soft delete) e restaurar.
-- [ ] Posts: criar, listar (busca por título, status e tag), editar, excluir (soft delete) e restaurar.
-- [ ] Post tem título, slug, resumo (opcional), conteúdo em Markdown, status `draft`/`published`, `published_at` e N tags.
-- [ ] Publicar/despublicar post (publicar preenche `published_at`).
-- [ ] Só usuário autenticado acessa; post pertence ao autor (policy).
-- [ ] Testes Unit (Actions/DTOs) e Feature (rotas) passando.
+- [x] Tags: criar, listar, editar, excluir (soft delete) e restaurar.
+- [x] Posts: criar, listar (busca por título, status e tag), editar, excluir (soft delete) e restaurar.
+- [x] Post tem título, slug, resumo (opcional), conteúdo em Markdown, status `draft`/`published`, `published_at` e N tags.
+- [x] Publicar/despublicar post (publicar preenche `published_at`).
+- [x] Só usuário autenticado acessa; post pertence ao autor (policy).
+- [x] Testes Unit (Actions/DTOs) e Feature (rotas) passando.
 
 ## Decisões
 - **Escopo:** só o admin; páginas públicas ficam para outra feature.
