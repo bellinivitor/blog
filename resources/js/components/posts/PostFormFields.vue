@@ -2,6 +2,7 @@
 import InputError from '@/components/InputError.vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import TagInput from './TagInput.vue';
 import type { Post, Tag } from '@/types';
 
 const props = defineProps<{
@@ -12,8 +13,6 @@ const props = defineProps<{
 
 const textareaClass =
     'w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30';
-
-const selectedTagIds = new Set(props.post?.tags.map((tag) => tag.id) ?? []);
 
 function tagError(): string | undefined {
     return (
@@ -78,28 +77,15 @@ function tagError(): string | undefined {
             <InputError :message="errors.content" />
         </div>
 
-        <fieldset class="grid gap-2">
-            <legend class="mb-2 text-sm font-medium">Tags</legend>
-            <p v-if="tags.length === 0" class="text-sm text-muted-foreground">
-                No tags yet.
-            </p>
-            <div class="flex flex-wrap gap-x-6 gap-y-2">
-                <label
-                    v-for="tag in tags"
-                    :key="tag.id"
-                    class="flex items-center gap-2 text-sm"
-                >
-                    <input
-                        type="checkbox"
-                        name="tag_ids[]"
-                        :value="tag.id"
-                        :checked="selectedTagIds.has(tag.id)"
-                        class="size-4 accent-primary"
-                    />
-                    {{ tag.name }}
-                </label>
-            </div>
+        <div class="grid gap-2">
+            <Label for="tags">Tags</Label>
+            <TagInput
+                id="tags"
+                name="tag_ids"
+                :tags="tags"
+                :default-selected="post?.tags"
+            />
             <InputError :message="tagError()" />
-        </fieldset>
+        </div>
     </div>
 </template>
