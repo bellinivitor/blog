@@ -46,8 +46,12 @@
         @endisset
 
         <x-inertia::head>
-            {{-- Same "Title - App" format the client-side <Head> uses after navigation. --}}
-            <title>{{ isset($meta) ? $meta->title.' - '.config('app.name', 'Blog') : config('app.name', 'Blog') }}</title>
+            {{-- Same "Title - App" format the client-side <Head> uses after navigation; the home title stands alone. --}}
+            <title>{{ match (true) {
+                ! isset($meta) => config('app.name', 'Blog'),
+                $page['component'] === 'blog/Index' => $meta->title,
+                default => $meta->title.' - '.config('app.name', 'Blog'),
+            } }}</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">

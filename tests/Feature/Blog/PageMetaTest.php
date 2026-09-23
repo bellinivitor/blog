@@ -54,6 +54,7 @@ test('the home and tag pages describe themselves as websites', function () {
     Tag::factory()->create(['name' => 'Vue', 'slug' => 'vue']);
 
     $this->get(route('home'))
+        ->assertSee('<title>'.config('blog.author').'</title>', false)
         ->assertSee('<meta property="og:title" content="'.config('blog.author').'">', false)
         ->assertSee('<meta property="og:type" content="website">', false);
 

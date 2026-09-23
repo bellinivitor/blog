@@ -9,7 +9,14 @@ import { initializeFlashToast } from '@/lib/flashToast';
 const appName = import.meta.env.VITE_APP_NAME || 'Blog';
 
 void createInertiaApp({
-    title: (title) => (title ? `${title} - ${appName}` : appName),
+    // The home title is the author's name, which already names the site.
+    title: (title, page) => {
+        if (!title) {
+            return appName;
+        }
+
+        return page?.component === 'blog/Index' ? title : `${title} - ${appName}`;
+    },
     layout: (name) => {
         switch (true) {
             case name.startsWith('blog/'):
