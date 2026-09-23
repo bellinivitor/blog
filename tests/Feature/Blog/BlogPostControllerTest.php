@@ -75,8 +75,24 @@ describe('show', function () {
         $response->assertInertia(fn (Assert $page) => $page
             ->component('blog/Show')
             ->where('post.slug', 'hello')
-            ->where('content', fn (string $html) => str_contains($html, '<h2>Intro</h2>')
+            ->where('content', fn (string $html) => str_contains($html, '<h2 id="intro">Intro</h2>')
                 && str_contains($html, 'class="phiki language-php'))
+        );
+    });
+
+    test('gives h2 and h3 headings unique ids for the table of contents', function () {
+        Post::factory()->published()->create([
+            'slug' => 'hello',
+            'content' => "# Top\n\n## O mecanismo\n\n### Detalhe\n\n## O mecanismo",
+        ]);
+
+        $response = $this->get(route('blog.posts.show', 'hello'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('content', fn (string $html) => str_contains($html, '<h1>Top</h1>')
+                && str_contains($html, '<h2 id="o-mecanismo">O mecanismo</h2>')
+                && str_contains($html, '<h3 id="detalhe">Detalhe</h3>')
+                && str_contains($html, '<h2 id="o-mecanismo-1">O mecanismo</h2>'))
         );
     });
 

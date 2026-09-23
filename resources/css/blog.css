@@ -81,6 +81,11 @@
     letter-spacing: -0.01em;
 }
 
+.blog-prose h2,
+.blog-prose h3 {
+    scroll-margin-top: 2rem;
+}
+
 .blog-prose h2 {
     margin-top: 2.5em;
     font-size: 1.375rem;
