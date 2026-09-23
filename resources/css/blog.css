@@ -72,6 +72,7 @@
     margin-top: 1.25em;
 }
 
+.blog-prose h1,
 .blog-prose h2,
 .blog-prose h3,
 .blog-prose h4 {
@@ -84,6 +85,11 @@
 .blog-prose h2,
 .blog-prose h3 {
     scroll-margin-top: 2rem;
+}
+
+.blog-prose h1 {
+    margin-top: 2.5em;
+    font-size: 1.75rem;
 }
 
 .blog-prose h2 {
@@ -101,6 +107,7 @@
     font-size: 1rem;
 }
 
+.blog-prose h1 + *,
 .blog-prose h2 + *,
 .blog-prose h3 + *,
 .blog-prose h4 + * {

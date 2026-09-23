@@ -97,11 +97,14 @@ onBeforeUnmount(() => {
     --crepe-color-selected: var(--accent);
     --crepe-color-inline-area: var(--muted);
 
+    /* Same typefaces as the public post page (resources/css/blog.css). */
     --crepe-base-font-size: 16px;
-    --crepe-font-title: var(--font-sans);
-    --crepe-font-default: var(--font-sans);
+    --crepe-font-title:
+        'Monaspace Xenon', 'Monaspace Neon', ui-monospace, monospace;
+    --crepe-font-default:
+        'Monaspace Neon', ui-monospace, SFMono-Regular, Menlo, monospace;
     --crepe-font-code:
-        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        'Monaspace Neon', ui-monospace, SFMono-Regular, Menlo, monospace;
 
     --crepe-shadow-1:
         0px 1px 3px 1px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.2);
@@ -109,8 +112,72 @@ onBeforeUnmount(() => {
         0px 2px 6px 2px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.2);
 }
 
-.markdown-editor .milkdown .ProseMirror {
+/*
+ * The writing area mirrors the public post column (.blog-prose): a 68ch
+ * measure in Monaspace Neon at 16px / 1.8, titles in Xenon at the same sizes,
+ * so lines break where they will on the published page. The attribute
+ * selector outweighs Crepe's nested `.milkdown .milkdown .ProseMirror` rules.
+ */
+.markdown-editor .milkdown .ProseMirror[contenteditable] {
+    box-sizing: content-box;
+    max-width: 68ch;
     min-height: 24rem;
-    padding: 1.5rem 3.5rem;
+    margin-inline: auto;
+    padding: 2rem 3.5rem;
+    font-family: var(--crepe-font-default);
+    font-size: 1rem;
+    line-height: 1.8;
+    font-feature-settings:
+        'calt' 1,
+        'liga' 0;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] p {
+    padding: 0;
+    line-height: 1.8;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] > * + * {
+    margin-top: 1.25em;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] :is(h1, h2, h3, h4) {
+    padding: 0;
+    font-family: var(--crepe-font-title);
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] h1 {
+    margin-top: 2.5em;
+    font-size: 1.75rem;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] h2 {
+    margin-top: 2.5em;
+    font-size: 1.375rem;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] h3 {
+    margin-top: 2em;
+    font-size: 1.125rem;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] h4 {
+    margin-top: 1.75em;
+    font-size: 1rem;
+}
+
+.markdown-editor
+    .milkdown
+    .ProseMirror[contenteditable]
+    :is(h1, h2, h3, h4)
+    + * {
+    margin-top: 0.75em;
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] > :first-child {
+    margin-top: 0;
 }
 </style>
