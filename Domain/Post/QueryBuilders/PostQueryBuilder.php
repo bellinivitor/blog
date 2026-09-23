@@ -34,6 +34,59 @@ class PostQueryBuilder extends Builder
     }
 
     /**
+     * The published post right before the given one (older), by publication
+     * date with the id as tie-breaker.
+     */
+    public function publishedBefore(Post $post): static
+    {
+        $this->published()
+            ->where(fn (Builder $query) => $query
+                ->where('published_at', '<', $post->published_at)
+                ->orWhere(fn (Builder $query) => $query
+                    ->where('published_at', $post->published_at)
+                    ->where('id', '<', $post->id)))
+            ->orderByDesc('published_at')
+            ->orderByDesc('id');
+
+        return $this;
+    }
+
+    /**
+     * The published post right after the given one (newer).
+     */
+    public function publishedAfter(Post $post): static
+    {
+        $this->published()
+            ->where(fn (Builder $query) => $query
+                ->where('published_at', '>', $post->published_at)
+                ->orWhere(fn (Builder $query) => $query
+                    ->where('published_at', $post->published_at)
+                    ->where('id', '>', $post->id)))
+            ->orderBy('published_at')
+            ->orderBy('id');
+
+        return $this;
+    }
+
+    /**
+     * Published posts sharing tags with the given one, most shared tags
+     * first, then newest.
+     */
+    public function relatedTo(Post $post): static
+    {
+        $tagIds = $post->tags->modelKeys();
+
+        $this->published()
+            ->whereKeyNot($post->id)
+            ->whereHas('tags', fn (Builder $query) => $query->whereKey($tagIds))
+            ->withCount(['tags as shared_tags_count' => fn (Builder $query) => $query->whereKey($tagIds)])
+            ->orderByDesc('shared_tags_count')
+            ->orderByDesc('published_at');
+
+        return $this;
+    }
+
+    /**
      * Posts whose title or content contains the term, title matches first.
      * LIKE wildcards typed by the reader are matched literally.
      */

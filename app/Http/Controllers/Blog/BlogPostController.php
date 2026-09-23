@@ -13,6 +13,8 @@ use Inertia\Response;
 
 class BlogPostController extends Controller
 {
+    private const int RELATED_LIMIT = 3;
+
     /**
      * The blog home: intro and every published post, newest first.
      */
@@ -47,9 +49,16 @@ class BlogPostController extends Controller
             ->with('tags')
             ->firstOrFail();
 
+        $previous = Post::query()->publishedBefore($post)->with('tags')->first();
+        $next = Post::query()->publishedAfter($post)->with('tags')->first();
+        $related = Post::query()->relatedTo($post)->with('tags')->limit(self::RELATED_LIMIT)->get();
+
         return Inertia::render('blog/Show', [
             'post' => PublishedPostResource::make($post),
             'content' => $renderPostContent($post),
+            'previous' => $previous ? PublishedPostResource::make($previous) : null,
+            'next' => $next ? PublishedPostResource::make($next) : null,
+            'related' => PublishedPostResource::collection($related),
         ])->withViewData(['meta' => $buildPageMeta($post)]);
     }
 }

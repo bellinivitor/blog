@@ -218,7 +218,83 @@
     font-weight: 700;
 }
 
+/* Enhancements injected on the client (useArticleEnhancements). */
+
+.blog-prose .heading-anchor {
+    margin-left: 1ch;
+    color: var(--graphite);
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 150ms;
+}
+
+.blog-prose :is(h2, h3):hover .heading-anchor,
+.blog-prose .heading-anchor:focus-visible {
+    opacity: 1;
+}
+
+.blog-prose .heading-anchor:hover {
+    color: var(--pen);
+}
+
+@media (hover: none) {
+    .blog-prose .heading-anchor {
+        opacity: 0.5;
+    }
+}
+
+.blog-prose .code-block {
+    position: relative;
+}
+
+.blog-prose .code-copy {
+    position: absolute;
+    top: 0.625rem;
+    right: calc(-2ch + 0.625rem);
+    padding: 0.125rem 0.75ch;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--paper);
+    color: var(--graphite);
+    font-family: var(--font-text);
+    font-size: 0.75rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 150ms;
+}
+
+.blog-prose .code-block:hover .code-copy,
+.blog-prose .code-copy:focus-visible {
+    opacity: 1;
+}
+
+.blog-prose .code-copy:hover {
+    color: var(--ink);
+}
+
+.blog-prose .code-copy:focus-visible {
+    outline: 2px solid var(--pen);
+    outline-offset: 2px;
+}
+
+@media (hover: none) {
+    .blog-prose .code-copy {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .blog-prose .heading-anchor,
+    .blog-prose .code-copy {
+        transition: none;
+    }
+}
+
 @media (max-width: 640px) {
+    .blog-prose .code-copy {
+        right: calc(-1.5rem + 0.625rem);
+    }
+
     .blog-prose pre {
         margin-inline: -1.5rem;
         border-radius: 0;

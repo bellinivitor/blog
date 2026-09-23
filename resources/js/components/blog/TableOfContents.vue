@@ -7,10 +7,17 @@ type Heading = {
     level: 2 | 3;
 };
 
-const props = defineProps<{
-    /** Element holding the rendered article, whose h2/h3 carry ids. */
-    source: HTMLElement | null;
-}>();
+const props = withDefaults(
+    defineProps<{
+        /** Element holding the rendered article, whose h2/h3 carry ids. */
+        source: HTMLElement | null;
+        /** `aside`: sticky list in the margin; `inline`: collapsible, for small screens. */
+        variant?: 'aside' | 'inline';
+    }>(),
+    { variant: 'aside' },
+);
+
+const details = ref<HTMLDetailsElement | null>(null);
 
 const headings = ref<Heading[]>([]);
 const activeIds = ref<Set<string>>(new Set());
@@ -82,6 +89,10 @@ function scrollTo(event: MouseEvent, id: string): void {
         '(prefers-reduced-motion: reduce)',
     ).matches;
 
+    if (details.value) {
+        details.value.open = false;
+    }
+
     target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
     history.replaceState(null, '', `#${encodeURIComponent(id)}`);
 }
@@ -92,7 +103,8 @@ function build(source: HTMLElement): void {
 
     headings.value = elements.map((el) => ({
         id: el.id,
-        text: el.textContent?.trim() ?? '',
+        // The heading may already carry an injected "#" anchor.
+        text: el.dataset.title ?? el.textContent?.trim() ?? '',
         level: el.tagName === 'H3' ? 3 : 2,
     }));
 
@@ -122,7 +134,31 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <nav v-if="headings.length > 1" aria-labelledby="toc-title" class="toc">
+    <details
+        v-if="variant === 'inline' && headings.length > 1"
+        ref="details"
+        class="toc toc--inline"
+    >
+        <summary>Nesta página</summary>
+        <ol class="mt-3">
+            <li v-for="heading in headings" :key="heading.id">
+                <a
+                    :href="`#${heading.id}`"
+                    class="toc-link"
+                    :class="{ 'toc-link--nested': heading.level === 3 }"
+                    @click="scrollTo($event, heading.id)"
+                >
+                    {{ heading.text }}
+                </a>
+            </li>
+        </ol>
+    </details>
+
+    <nav
+        v-else-if="variant === 'aside' && headings.length > 1"
+        aria-labelledby="toc-title"
+        class="toc"
+    >
         <p
             id="toc-title"
             class="font-[family-name:var(--font-title)] text-[0.9375rem] font-bold"
@@ -151,6 +187,25 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.toc--inline {
+    padding: 0.875rem 1.25rem;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+}
+
+.toc--inline summary {
+    cursor: pointer;
+    font-family: var(--font-title);
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.toc--inline summary:focus-visible {
+    outline: 2px solid var(--pen);
+    outline-offset: 4px;
+    border-radius: 2px;
+}
+
 .toc ol {
     border-left: 1px solid var(--rule);
 }

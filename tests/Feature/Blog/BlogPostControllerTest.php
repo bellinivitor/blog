@@ -115,6 +115,48 @@ describe('show', function () {
         );
     });
 
+    test('links the previous (older) and next (newer) published posts', function () {
+        Post::factory()->create(['slug' => 'first', 'status' => PostStatus::Published, 'published_at' => '2026-01-01 10:00:00']);
+        Post::factory()->create(['slug' => 'draft-between', 'published_at' => null]);
+        Post::factory()->create(['slug' => 'middle', 'status' => PostStatus::Published, 'published_at' => '2026-02-01 10:00:00']);
+        Post::factory()->create(['slug' => 'last', 'status' => PostStatus::Published, 'published_at' => '2026-03-01 10:00:00']);
+
+        $response = $this->get(route('blog.posts.show', 'middle'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('previous.slug', 'first')
+            ->where('next.slug', 'last')
+        );
+    });
+
+    test('has no previous post for the oldest and no next for the newest', function () {
+        Post::factory()->create(['slug' => 'only', 'status' => PostStatus::Published, 'published_at' => '2026-01-01 10:00:00']);
+
+        $response = $this->get(route('blog.posts.show', 'only'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('previous', null)
+            ->where('next', null)
+        );
+    });
+
+    test('suggests up to three published posts sharing tags, most shared first', function () {
+        [$laravel, $vue, $php] = Tag::factory()->count(3)->create();
+        $post = Post::factory()->published()->hasAttached([$laravel, $vue])->create(['slug' => 'current']);
+        Post::factory()->published()->hasAttached($laravel)->create(['slug' => 'one-tag', 'published_at' => now()->subDay()]);
+        Post::factory()->published()->hasAttached([$laravel, $vue])->create(['slug' => 'two-tags', 'published_at' => now()->subDays(30)]);
+        Post::factory()->hasAttached($laravel)->create(['slug' => 'draft']);
+        Post::factory()->published()->hasAttached($php)->create(['slug' => 'unrelated']);
+
+        $response = $this->get(route('blog.posts.show', $post->slug));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->has('related', 2)
+            ->where('related.0.slug', 'two-tags')
+            ->where('related.1.slug', 'one-tag')
+        );
+    });
+
     test('escapes raw html written in the markdown', function () {
         Post::factory()->published()->create([
             'slug' => 'hello',
