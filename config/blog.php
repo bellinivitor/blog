@@ -20,6 +20,7 @@ return [
 
     'links' => [
         ['label' => 'GitHub', 'url' => 'https://github.com/bellinivitor'],
+        ['label' => 'LinkedIn', 'url' => 'https://www.linkedin.com/in/bellinivitor/'],
     ],
 
 ];
