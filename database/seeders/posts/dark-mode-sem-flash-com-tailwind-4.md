@@ -13,7 +13,10 @@ O tema é decidido no JavaScript, que roda depois do primeiro pintar da tela.
 ```html
 <script>
     const theme = '{{ $appearance }}';
-    if (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (
+        theme === 'system' &&
+        matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
         document.documentElement.classList.add('dark');
     }
 </script>

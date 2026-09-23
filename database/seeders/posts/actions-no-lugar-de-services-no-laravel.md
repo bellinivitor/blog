@@ -1,4 +1,4 @@
-Toda vez que um controller passa de cem linhas, alguém sugere criar um *service*. Eu sugeria também, até perceber que o problema não era o tamanho do arquivo, e sim a mistura de responsabilidades.
+Toda vez que um controller passa de cem linhas, alguém sugere criar um _service_. Eu sugeria também, até perceber que o problema não era o tamanho do arquivo, e sim a mistura de responsabilidades.
 
 ## O que muda com uma Action
 

@@ -96,12 +96,14 @@ abstract class DefaultModel extends Model
 Local: `app/Models/{Domain}/`. Estendem `DefaultModel`.
 
 DEVE:
+
 - Definir `$fillable` explicitamente (mass assignment).
 - Definir relacionamentos Eloquent.
 - Sobrescrever `newEloquentBuilder()` quando o domínio tiver QueryBuilder.
 - Conter apenas accessors/mutators/casts simples.
 
 NUNCA:
+
 - Regra de negócio (vai para Action).
 - `$guarded = []` — sempre `$fillable`.
 - Crescer demais (muitos métodos além de relationships → extrair).
@@ -150,6 +152,7 @@ class Post extends DefaultModel
 Local: `app/Http/Controllers/`.
 
 DEVE (e só isso):
+
 1. Receber `FormRequest` por injeção (validação automática).
 2. Autorizar com `Gate::authorize('ability', Model::class)`.
 3. Montar o DTO (`PostDTO::fromRequest($request)`).
@@ -157,6 +160,7 @@ DEVE (e só isso):
 5. Retornar via Resource.
 
 NUNCA:
+
 - Regra de negócio, `Model::create()`, `DB::` direto.
 - Validação inline (sempre FormRequest).
 - `$this->authorize()` — a trait `AuthorizesRequests` não existe mais no Controller base. Use `Gate::authorize()` ou middleware `can` via `HasMiddleware`.
@@ -219,6 +223,7 @@ class PostController extends Controller implements HasMiddleware
 Local: `Domain/{Domain}/Actions/`.
 
 DEVE:
+
 - Ser `readonly class` com **um único método público `__invoke()`**.
 - Receber dados via **DTO** (nunca Request/array).
 - Envolver escrita em transação.
@@ -226,6 +231,7 @@ DEVE:
 - Ser reutilizável de Controller, Job, Command ou outra Action.
 
 NUNCA:
+
 - Receber `FormRequest`/`Request`/array cru.
 - Virar "God Class" — uma responsabilidade por Action.
 
@@ -279,6 +285,7 @@ readonly class StorePostAction
 Local: `Domain/{Domain}/DataTransferObjects/`. São o **contrato de entrada do Domain**.
 
 DEVE:
+
 - Ser `final readonly class` implementando `DataTransferObjectInterface`.
 - Ter factory methods retornando `static`: `fromRequest`, `fromArray`, e opcionalmente `fromModel`.
 - Não conter lógica de negócio.
@@ -457,6 +464,7 @@ Local: `Domain/{Domain}/States/`. Use quando trocar de status carrega responsabi
 **Como State e Enum se compõem:** o enum é o dado persistido; o State é o comportamento que decide o próximo status. Cada State retorna o valor do enum.
 
 Regras:
+
 - Cada estado = classe separada implementando uma interface de estado do domínio (ex: `PostStatusState`).
 - Único método público `handle()` **retorna o enum de status**.
 - Estado é **puro**: não recebe o model, não toca no banco, não dispara side effects. Só responde "para qual status essa transição leva". Guarda de transição inválida (lançar exception) pode viver no `handle()`.
@@ -552,10 +560,10 @@ Local: `Domain/{Domain}/Resources/`.
 
 ## Comunicação entre domínios — tabela de decisão
 
-| Situação | Mecanismo |
-|---|---|
-| Precisa do **retorno**, síncrono, **mesma transação** | **Injeção direta da Action** no construtor (container resolve via `__invoke`) |
-| **Side effect** que o domínio de origem não precisa conhecer (notificar, indexar, analytics) | **Evento de domínio** (`PostPublished`) + listeners nos outros domínios |
+| Situação                                                                                     | Mecanismo                                                                     |
+| -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Precisa do **retorno**, síncrono, **mesma transação**                                        | **Injeção direta da Action** no construtor (container resolve via `__invoke`) |
+| **Side effect** que o domínio de origem não precisa conhecer (notificar, indexar, analytics) | **Evento de domínio** (`PostPublished`) + listeners nos outros domínios       |
 
 Regra: precisa do valor e pertence à transação → injeta Action. "Aconteceu X, outros podem reagir" → dispara evento. Mantém domínios desacoplados e evita ciclos. Não crie interface para Action de implementação única.
 
@@ -563,10 +571,10 @@ Regra: precisa do valor e pertence à transação → injeta Action. "Aconteceu 
 
 ## Exceptions e respostas de erro — tabela de decisão
 
-| Contexto | Base a estender | Comportamento |
-|---|---|---|
-| Erro no **runtime da API** | `DomainHttpException` (estende `Symfony\...\HttpException`) | Laravel renderiza JSON automaticamente com o status. **Não mexer no handler.** |
-| Erro **fora do HTTP** (jobs/background) | `DomainException` (estende `RuntimeException`) | Tratado pela fila (`failed_jobs`, retry/backoff). Sem render. |
+| Contexto                                | Base a estender                                             | Comportamento                                                                  |
+| --------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Erro no **runtime da API**              | `DomainHttpException` (estende `Symfony\...\HttpException`) | Laravel renderiza JSON automaticamente com o status. **Não mexer no handler.** |
+| Erro **fora do HTTP** (jobs/background) | `DomainException` (estende `RuntimeException`)              | Tratado pela fila (`failed_jobs`, retry/backoff). Sem render.                  |
 
 Formato de erro = padrão do Laravel (não inventar envelope): validação → `{ "message", "errors": {...} }` (422); demais → `{ "message" }`. Mapeamentos automáticos: `ValidationException`→422, `AuthenticationException`→401, `AccessDeniedHttpException`→403, `ModelNotFoundException`/`NotFoundHttpException`→404. Em produção (`APP_DEBUG=false`) nada de stack trace.
 

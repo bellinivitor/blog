@@ -10,6 +10,7 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 This application is a Laravel application running on PHP 8.5. You are an expert with the Laravel ecosystem. Always use the APIs that match the installed major version of each package — do not assume a version.
 
 Before relying on a package's API, confirm its installed version:
+
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
 - JS packages: check `package.json` for the installed versions.
 
@@ -85,7 +86,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Execute PHP in app context for debugging and testing code. Do not create models without user approval, prefer tests with factories instead. Prefer existing Artisan commands over custom tinker code.
 - Always use single quotes to prevent shell expansion: `php artisan tinker --execute 'Your::code();'`
-  - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
+    - Double quotes for PHP strings inside: `php artisan tinker --execute 'User::where("active", true)->count();'`
 
 === php rules ===
 
@@ -209,17 +210,20 @@ Use Wayfinder to generate TypeScript functions for Laravel routes. Import from `
 # Inertia + Vue
 
 Vue components must have a single root element.
+
 - IMPORTANT: Activate `inertia-vue-development` when working with Inertia Vue client-side patterns.
 
 </laravel-boost-guidelines>
 
 <!-- dev:setup:início — gerado automaticamente; edite o miolo se precisar, mantenha os marcadores -->
+
 ## Contrato de trabalho com IA
 
 **Stack:** Laravel 13.33 · PHP 8.5 · Inertia v3 + Vue 3 + TypeScript · Tailwind v4 · Fortify · Wayfinder · Pest 5 · Pint · Larastan · Laravel Boost (MCP) · npm (package-lock) · testes em SQLite `:memory:`
 **Arquitetura:** seguir docs/architecture/AGENTS.md (domain-driven — bellinivitor/laravel-architecture). Namespace `Domain\` → `Domain/` (raiz). Tradução `__()` só em contexto Livewire.
 
 ### Seguranças (não negociáveis)
+
 - Nada destrutivo sem confirmar: apagar/alterar dados em massa, resetar/dropar banco, `delete`/`update` sem filtro, `rm -rf`, `git push --force`.
 - Nada destrutivo fora de `local`/`testing`. Nunca em produção. Confirmar `APP_ENV` antes de agir.
 - Proibidos sem confirmar: `migrate:fresh`, `migrate:refresh`, `migrate:reset`, `db:wipe`, `queue:flush`/`queue:clear`, `truncate()`, `delete()`/`update()` sem `where`, `forceDelete()`.
@@ -231,7 +235,9 @@ Vue components must have a single root element.
 - Se algo "não atualizou" após uma mudança, suspeitar de cache (`optimize:clear`, `npm run build`) antes do código.
 
 ### Padrões
+
 - Seguir as convenções já existentes no código.
 - Não inventar API/rota/coluna/versão — confirmar na fonte (Boost `search-docs`, `database-schema`); em dúvida, perguntar.
 - Mudanças pequenas e revisáveis; testes junto; mostrar a saída real antes de dar por pronto.
+
 <!-- dev:setup:fim -->

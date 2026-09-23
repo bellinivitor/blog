@@ -15,7 +15,9 @@ void createInertiaApp({
             return appName;
         }
 
-        return page?.component === 'blog/Index' ? title : `${title} - ${appName}`;
+        return page?.component === 'blog/Index'
+            ? title
+            : `${title} - ${appName}`;
     },
     layout: (name) => {
         switch (true) {
