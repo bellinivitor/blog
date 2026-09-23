@@ -26,9 +26,16 @@ const years = computed(() => {
     <ol class="timeline">
         <li v-for="group in years" :key="group.year">
             <h2 class="timeline-row timeline-year">
-                <span class="timeline-date">{{ group.year }}</span>
-                <span class="timeline-rail" aria-hidden="true">
+                <span class="timeline-cell" />
+                <span class="timeline-cell timeline-rail" aria-hidden="true">
                     <span class="timeline-branch" />
+                </span>
+                <span class="timeline-cell timeline-year-label">
+                    <span class="timeline-year-number">{{ group.year }}</span>
+                    <span class="timeline-year-count">
+                        {{ group.posts.length }}
+                        {{ group.posts.length === 1 ? 'post' : 'posts' }}
+                    </span>
                 </span>
             </h2>
 
@@ -91,15 +98,46 @@ const years = computed(() => {
     font-variant-numeric: tabular-nums;
 }
 
-.timeline-year .timeline-date {
-    font-family: var(--font-title);
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--ink);
+/* A new year opens a section: extra room above, the year set in the reading
+   column, and a hairline branching off the rail to the end of the column. */
+.timeline-year {
+    --year-gap: 2.25rem;
 }
 
-.timeline-year .timeline-date {
-    padding-bottom: 1.5rem;
+.timeline > li:first-child .timeline-year {
+    --year-gap: 0rem;
+}
+
+.timeline-year > .timeline-cell {
+    padding-top: var(--year-gap);
+    padding-bottom: 1.75rem;
+}
+
+.timeline-year-label {
+    display: flex;
+    align-items: baseline;
+    gap: 2ch;
+    line-height: 1.75rem;
+}
+
+.timeline-year-label::after {
+    content: '';
+    flex: 1;
+    align-self: center;
+    height: 1px;
+    background: var(--rule);
+}
+
+.timeline-year-number {
+    font-family: var(--font-title);
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.timeline-year-count {
+    font-size: 0.8125rem;
+    color: var(--graphite);
 }
 
 /* The rail: one continuous line, like `git log --graph`. */
@@ -133,6 +171,21 @@ const years = computed(() => {
     translate: -50% -50%;
 }
 
+.timeline-year .timeline-branch {
+    top: calc(var(--year-gap) + 0.875rem);
+}
+
+/* Short connector from the year marker into the reading column. */
+.timeline-year .timeline-rail::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--year-gap) + 0.875rem);
+    left: 50%;
+    right: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--pen) 45%, transparent);
+}
+
 .timeline-node {
     width: 0.625rem;
     height: 0.625rem;
@@ -142,8 +195,9 @@ const years = computed(() => {
 }
 
 .timeline-branch {
-    width: 0.5rem;
-    height: 0.5rem;
+    z-index: 1;
+    width: 0.625rem;
+    height: 0.625rem;
     background: var(--pen);
     rotate: 45deg;
 }
