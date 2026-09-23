@@ -28,6 +28,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
         ->withTrashed()
         ->name('tags.restore');
 
+    Route::get('readings/search', [ReadingController::class, 'search'])->name('readings.search');
     Route::resource('readings', ReadingController::class)->except('show');
     Route::patch('readings/{reading}/restore', [ReadingController::class, 'restore'])
         ->withTrashed()

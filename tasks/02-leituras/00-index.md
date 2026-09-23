@@ -1,6 +1,6 @@
 # 02 — Leituras
 
-> Status: doing
+> Status: done
 
 ## Objetivo
 
@@ -11,7 +11,7 @@ Cadastrar leituras recomendadas (título e link), mostrá-las numa página públ
 - [x] Admin `/admin/readings`: criar, listar (busca), editar, excluir (soft delete) e restaurar leituras.
 - [x] Seeder com leituras de exemplo para testar localmente.
 - [x] Página pública `/leituras`: lista única, mais recentes primeiro; cada item é um link (nova aba). Link "Leituras" no rodapé; página no sitemap.
-- [ ] Editor de post: botão "Inserir leitura" busca uma leitura e transforma o trecho selecionado em link (sem seleção, insere o título).
+- [x] Editor de post: botão "Inserir leitura" busca uma leitura e transforma o trecho selecionado em link (sem seleção, insere o título).
 - [x] Post publicado: referência vira link para a URL atual da leitura; leitura excluída vira texto simples.
 - [x] Alterar o link de uma leitura atualiza os posts que a citam (cache do HTML invalidado).
 
@@ -38,4 +38,4 @@ Autor, comentário, tipo, tags de leitura, links de afiliado, seção "Leituras 
 - [x] [02 — Leitura: telas do admin](02-leitura-telas.md) · done
 - [x] [03 — Página pública de leituras](03-pagina-publica.md) · done
 - [x] [04 — Referência no post: renderização](04-referencia-renderizacao.md) · done
-- [ ] [05 — Referência no post: editor](05-referencia-editor.md) · todo
+- [x] [05 — Referência no post: editor](05-referencia-editor.md) · done

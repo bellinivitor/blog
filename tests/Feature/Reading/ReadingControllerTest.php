@@ -152,3 +152,35 @@ describe('restore', function () {
         $this->assertNotSoftDeleted($reading);
     });
 });
+
+describe('search', function () {
+    test('guests cannot search readings', function () {
+        $response = $this->getJson(route('readings.search', ['search' => 'design']));
+
+        $response->assertUnauthorized();
+    });
+
+    test('returns active readings matching the title, newest first', function () {
+        Reading::factory()->create(['title' => 'Domain-Driven Design', 'created_at' => now()->subDay()]);
+        Reading::factory()->create(['title' => 'A Philosophy of Software Design', 'url' => 'https://example.com/aposd']);
+        Reading::factory()->create(['title' => 'Refactoring']);
+        Reading::factory()->trashed()->create(['title' => 'Design Patterns']);
+
+        $response = $this->actingAs(User::factory()->create())
+            ->getJson(route('readings.search', ['search' => 'design']));
+
+        $response->assertOk()
+            ->assertJsonCount(2)
+            ->assertJsonPath('0.title', 'A Philosophy of Software Design')
+            ->assertJsonPath('0.url', 'https://example.com/aposd')
+            ->assertJsonPath('1.title', 'Domain-Driven Design');
+    });
+
+    test('returns at most eight readings', function () {
+        Reading::factory()->count(10)->create();
+
+        $response = $this->actingAs(User::factory()->create())->getJson(route('readings.search'));
+
+        $response->assertJsonCount(8);
+    });
+});

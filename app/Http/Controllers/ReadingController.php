@@ -14,12 +14,15 @@ use Domain\Reading\DataTransferObjects\ReadingDTO;
 use Domain\Reading\DataTransferObjects\ReadingSearchDTO;
 use Domain\Reading\Resources\ReadingResource;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ReadingController extends Controller
 {
+    private const int MAX_SEARCH_RESULTS = 8;
+
     /**
      * List readings, newest first, optionally filtered by title or showing only trashed ones.
      */
@@ -39,6 +42,23 @@ class ReadingController extends Controller
             'readings' => ReadingResource::collection($readings),
             'filters' => $searchDTO->toArray(),
         ]);
+    }
+
+    /**
+     * Readings matching a title, for the "insert reading" picker of the post
+     * editor (JSON).
+     */
+    public function search(SearchReadingRequest $request): AnonymousResourceCollection
+    {
+        Gate::authorize('viewAny', Reading::class);
+
+        $readings = Reading::query()
+            ->search(ReadingSearchDTO::fromRequest($request))
+            ->latestFirst()
+            ->limit(self::MAX_SEARCH_RESULTS)
+            ->get();
+
+        return ReadingResource::collection($readings);
     }
 
     /**
