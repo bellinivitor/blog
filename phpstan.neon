@@ -5,6 +5,7 @@ includes:
 parameters:
     paths:
         - app/
+        - Domain/
         - bootstrap/app.php
         - config/
         - database/

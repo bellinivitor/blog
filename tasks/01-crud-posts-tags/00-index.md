@@ -28,7 +28,7 @@ Gerenciar posts e tags do blog pessoal na área logada, com telas Inertia/Vue e 
 Páginas públicas, preview de Markdown, upload de imagem, SEO/meta, agendamento de publicação, comentários.
 
 ## Tasks
-- [ ] [01 — Base da arquitetura](01-base-arquitetura.md) · todo
+- [x] [01 — Base da arquitetura](01-base-arquitetura.md) · done
 - [ ] [02 — Tag: backend](02-tag-backend.md) · todo
 - [ ] [03 — Tag: telas](03-tag-telas.md) · todo
 - [ ] [04 — Post: backend CRUD](04-post-backend.md) · todo
