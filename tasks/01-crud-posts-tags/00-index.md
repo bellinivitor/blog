@@ -29,7 +29,7 @@ Páginas públicas, preview de Markdown, upload de imagem, SEO/meta, agendamento
 
 ## Tasks
 - [x] [01 — Base da arquitetura](01-base-arquitetura.md) · done
-- [ ] [02 — Tag: backend](02-tag-backend.md) · todo
+- [x] [02 — Tag: backend](02-tag-backend.md) · done
 - [ ] [03 — Tag: telas](03-tag-telas.md) · todo
 - [ ] [04 — Post: backend CRUD](04-post-backend.md) · todo
 - [ ] [05 — Post: publicação](05-post-publicacao.md) · todo
