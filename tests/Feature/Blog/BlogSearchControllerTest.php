@@ -59,3 +59,27 @@ test('requires at least two characters', function () {
 
     $response->assertInvalid(['q' => 'The q field must be at least 2 characters.']);
 });
+
+test('ignores accents and case in both the term and the posts', function (string $term) {
+    Post::factory()->published()->create(['title' => 'Separando por domínio', 'content' => 'Texto.']);
+    Post::factory()->published()->create(['title' => 'Outro', 'content' => 'Uma Ação que não depende do HTTP.']);
+
+    $response = $this->getJson(route('blog.search', ['q' => $term]));
+
+    $response->assertOk()->assertJsonCount(1);
+})->with([
+    'term without accent' => 'dominio',
+    'uppercase with accent' => 'DOMÍNIO',
+    'accented word in content' => 'acao que nao',
+]);
+
+test('builds the snippet around an accented match', function () {
+    Post::factory()->published()->create([
+        'title' => 'Outro',
+        'content' => 'Primeiro parágrafo. Depois falamos de transações aninhadas e savepoints.',
+    ]);
+
+    $response = $this->getJson(route('blog.search', ['q' => 'transacoes']));
+
+    $response->assertJsonPath('0.snippet', 'Primeiro parágrafo. Depois falamos de transações aninhadas e savepoints.');
+});

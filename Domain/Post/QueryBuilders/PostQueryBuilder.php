@@ -4,6 +4,7 @@ namespace Domain\Post\QueryBuilders;
 
 use App\Models\Post\Post;
 use App\Models\User;
+use Domain\Post\Actions\NormalizeSearchTextAction;
 use Domain\Post\DataTransferObjects\BlogSearchDTO;
 use Domain\Post\DataTransferObjects\PostSearchDTO;
 use Domain\Post\Enums\PostStatus;
@@ -81,17 +82,19 @@ class PostQueryBuilder extends Builder
     }
 
     /**
-     * Posts whose title or content contains the term, title matches first.
-     * LIKE wildcards typed by the reader are matched literally.
+     * Posts whose title or content contains the term, ignoring accents and
+     * case, title matches first. LIKE wildcards typed by the reader are
+     * matched literally.
      */
     public function matchingText(BlogSearchDTO $searchDTO): static
     {
-        $pattern = '%'.strtr($searchDTO->term, ['!' => '!!', '%' => '!%', '_' => '!_']).'%';
+        $term = app(NormalizeSearchTextAction::class)($searchDTO->term);
+        $pattern = '%'.strtr($term, ['!' => '!!', '%' => '!%', '_' => '!_']).'%';
 
         $this->where(fn (Builder $query) => $query
-            ->whereRaw("title like ? escape '!'", [$pattern])
-            ->orWhereRaw("content like ? escape '!'", [$pattern]))
-            ->orderByRaw("case when title like ? escape '!' then 0 else 1 end", [$pattern]);
+            ->whereRaw("search_title like ? escape '!'", [$pattern])
+            ->orWhereRaw("search_content like ? escape '!'", [$pattern]))
+            ->orderByRaw("case when search_title like ? escape '!' then 0 else 1 end", [$pattern]);
 
         return $this;
     }

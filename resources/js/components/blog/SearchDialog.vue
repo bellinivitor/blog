@@ -137,21 +137,61 @@ function onBackdropClick(event: MouseEvent): void {
     }
 }
 
-/** Split text around case-insensitive matches of the term, for highlighting. */
+/** A character without accents, lowercased ("Í" becomes "i"). */
+function fold(character: string): string {
+    return character.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+}
+
+/**
+ * Split text around matches of the term, ignoring accents and case, for
+ * highlighting. Each character is folded on its own so matches map back to
+ * the original text.
+ */
 function segments(text: string): { text: string; match: boolean }[] {
-    if (term.value.length < MIN_LENGTH) {
+    const needle = Array.from(term.value).map(fold).join('');
+
+    if (term.value.length < MIN_LENGTH || needle === '') {
         return [{ text, match: false }];
     }
 
-    const escaped = term.value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const characters = Array.from(text);
+    let folded = '';
+    const originalIndex: number[] = [];
 
-    return text
-        .split(new RegExp(`(${escaped})`, 'gi'))
-        .filter((part) => part !== '')
-        .map((part) => ({
-            text: part,
-            match: part.toLowerCase() === term.value.toLowerCase(),
-        }));
+    characters.forEach((character, index) => {
+        const piece = fold(character);
+        folded += piece;
+        originalIndex.push(...Array.from(piece, () => index));
+    });
+
+    const parts: { text: string; match: boolean }[] = [];
+    let cursor = 0;
+    let found = folded.indexOf(needle);
+
+    while (found !== -1) {
+        const start = originalIndex[found];
+        const end = originalIndex[found + needle.length - 1] + 1;
+
+        if (start > cursor) {
+            parts.push({
+                text: characters.slice(cursor, start).join(''),
+                match: false,
+            });
+        }
+
+        parts.push({
+            text: characters.slice(start, end).join(''),
+            match: true,
+        });
+        cursor = end;
+        found = folded.indexOf(needle, found + needle.length);
+    }
+
+    if (cursor < characters.length) {
+        parts.push({ text: characters.slice(cursor).join(''), match: false });
+    }
+
+    return parts;
 }
 
 onMounted(() => window.addEventListener('keydown', onShortcut));
