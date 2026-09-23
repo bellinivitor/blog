@@ -9,6 +9,7 @@ use App\Http\Controllers\Blog\SeoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostImageController;
+use App\Http\Controllers\ReadingController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,11 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::patch('tags/{tag}/restore', [TagController::class, 'restore'])
         ->withTrashed()
         ->name('tags.restore');
+
+    Route::resource('readings', ReadingController::class)->except('show');
+    Route::patch('readings/{reading}/restore', [ReadingController::class, 'restore'])
+        ->withTrashed()
+        ->name('readings.restore');
 
     Route::post('posts/images', [PostImageController::class, 'store'])->name('posts.images.store');
     Route::resource('posts', PostController::class)->except('show');
