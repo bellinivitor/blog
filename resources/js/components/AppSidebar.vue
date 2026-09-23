@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, FolderGit2, LayoutGrid, Tags } from '@lucide/vue';
+import { BookOpen, FileText, FolderGit2, LayoutGrid, Tags } from '@lucide/vue';
+import PostController from '@/actions/App/Http/Controllers/PostController';
 import TagController from '@/actions/App/Http/Controllers/TagController';
 import AppLogo from '@/components/AppLogo.vue';
 import NavFooter from '@/components/NavFooter.vue';
@@ -23,6 +24,11 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Posts',
+        href: PostController.index(),
+        icon: FileText,
     },
     {
         title: 'Tags',

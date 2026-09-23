@@ -33,4 +33,4 @@ Páginas públicas, preview de Markdown, upload de imagem, SEO/meta, agendamento
 - [x] [03 — Tag: telas](03-tag-telas.md) · done
 - [x] [04 — Post: backend CRUD](04-post-backend.md) · done
 - [x] [05 — Post: publicação](05-post-publicacao.md) · done
-- [ ] [06 — Post: telas](06-post-telas.md) · todo
+- [x] [06 — Post: telas](06-post-telas.md) · done
