@@ -4,6 +4,7 @@ namespace Domain\Post\QueryBuilders;
 
 use App\Models\Post\Post;
 use App\Models\User;
+use Domain\Post\DataTransferObjects\BlogSearchDTO;
 use Domain\Post\DataTransferObjects\PostSearchDTO;
 use Domain\Post\Enums\PostStatus;
 use Illuminate\Database\Eloquent\Builder;
@@ -28,6 +29,22 @@ class PostQueryBuilder extends Builder
         $this->where('status', PostStatus::Published)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+
+        return $this;
+    }
+
+    /**
+     * Posts whose title or content contains the term, title matches first.
+     * LIKE wildcards typed by the reader are matched literally.
+     */
+    public function matchingText(BlogSearchDTO $searchDTO): static
+    {
+        $pattern = '%'.strtr($searchDTO->term, ['!' => '!!', '%' => '!%', '_' => '!_']).'%';
+
+        $this->where(fn (Builder $query) => $query
+            ->whereRaw("title like ? escape '!'", [$pattern])
+            ->orWhereRaw("content like ? escape '!'", [$pattern]))
+            ->orderByRaw("case when title like ? escape '!' then 0 else 1 end", [$pattern]);
 
         return $this;
     }

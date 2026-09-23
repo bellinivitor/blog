@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Blog\BlogPostController;
+use App\Http\Controllers\Blog\BlogSearchController;
 use App\Http\Controllers\Blog\BlogTagController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostImageController;
@@ -10,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'Welcome')->name('home');
 
 Route::get('blog', [BlogPostController::class, 'index'])->name('blog.index');
+Route::get('blog/search', [BlogSearchController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('blog.search');
 Route::get('blog/tags/{tag:slug}', [BlogTagController::class, 'show'])->name('blog.tags.show');
 Route::get('blog/{slug}', [BlogPostController::class, 'show'])->name('blog.posts.show');
 

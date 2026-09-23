@@ -2,6 +2,7 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
+import SearchDialog from '@/components/blog/SearchDialog.vue';
 import '../../css/blog.css';
 
 const blog = computed(() => usePage().props.blog);
@@ -12,15 +13,18 @@ const year = new Date().getFullYear();
     <div class="blog">
         <div class="mx-auto flex min-h-svh max-w-[76ch] flex-col px-6">
             <header
-                class="flex items-baseline justify-between gap-6 pt-10 pb-16 sm:pt-14"
+                class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-3 pt-10 pb-16 sm:pt-14"
             >
                 <Link
                     :href="BlogPostController.index()"
-                    class="font-[family-name:var(--font-title)] text-[1.0625rem] font-bold tracking-tight"
+                    class="font-[family-name:var(--font-title)] text-[1.0625rem] font-bold tracking-tight whitespace-nowrap"
                 >
                     {{ blog.author }}
                 </Link>
-                <nav class="flex gap-5 text-sm text-[var(--graphite)]">
+                <nav
+                    class="flex items-baseline gap-5 text-sm text-[var(--graphite)]"
+                >
+                    <SearchDialog />
                     <a
                         v-for="link in blog.links"
                         :key="link.url"
