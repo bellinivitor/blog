@@ -8,7 +8,13 @@ import type { PublishedPost } from '@/types';
 
 const props = defineProps<{
     posts: PublishedPost[];
+    /** Mark the newest post as HEAD, like `git log` does. */
+    showHead?: boolean;
 }>();
+
+const headSlug = computed(() =>
+    props.showHead ? (props.posts[0]?.slug ?? null) : null,
+);
 
 const years = computed(() => {
     const groups = new Map<number, PublishedPost[]>();
@@ -44,14 +50,27 @@ const years = computed(() => {
                     v-for="post in group.posts"
                     :key="post.slug"
                     class="timeline-row timeline-post"
+                    :class="{ 'timeline-post--head': post.slug === headSlug }"
                 >
-                    <time class="timeline-date" :datetime="post.published_at">
-                        {{ formatShortDate(post.published_at) }}
-                    </time>
-                    <span class="timeline-rail" aria-hidden="true">
+                    <span class="timeline-cell timeline-date">
+                        <time :datetime="post.published_at">
+                            {{ formatShortDate(post.published_at) }}
+                        </time>
+                        <span
+                            v-if="post.slug === headSlug"
+                            class="timeline-head-label"
+                            title="Post mais recente"
+                        >
+                            HEAD
+                        </span>
+                    </span>
+                    <span
+                        class="timeline-cell timeline-rail"
+                        aria-hidden="true"
+                    >
                         <span class="timeline-node" />
                     </span>
-                    <div class="pb-9">
+                    <div class="timeline-cell timeline-body">
                         <Link
                             :href="BlogPostController.show(post.slug)"
                             class="timeline-title"
@@ -65,14 +84,14 @@ const years = computed(() => {
                             {{ post.excerpt }}
                         </p>
                         <p
-                            v-if="post.tags.length"
-                            class="mt-2 flex flex-wrap gap-x-3 text-sm"
+                            class="timeline-meta mt-2 flex flex-wrap gap-x-3 text-sm text-[var(--graphite)]"
                         >
+                            <span>{{ post.reading_minutes }} min</span>
                             <Link
                                 v-for="tag in post.tags"
                                 :key="tag.id"
                                 :href="BlogTagController.show(tag.slug)"
-                                class="text-[var(--graphite)] hover:text-[var(--pen)]"
+                                class="timeline-tag hover:text-[var(--pen)]"
                             >
                                 #{{ tag.slug }}
                             </Link>
@@ -91,11 +110,71 @@ const years = computed(() => {
 }
 
 .timeline-date {
-    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
     font-size: 0.875rem;
     line-height: 1.75rem;
     color: var(--graphite);
     font-variant-numeric: tabular-nums;
+}
+
+/* Each post row: padding lives in the cells so the rail stays continuous. */
+.timeline-post {
+    --row-pad: 1.125rem;
+
+    position: relative;
+    isolation: isolate;
+}
+
+.timeline-post > .timeline-cell {
+    padding-block: var(--row-pad);
+}
+
+/* The whole row is the link target; tags stay independently clickable. */
+.timeline-title::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.timeline-tag {
+    position: relative;
+    z-index: 2;
+}
+
+/* A faint pen wash answers hover and keyboard focus. */
+.timeline-post::before {
+    content: '';
+    position: absolute;
+    inset: 0 -1.5ch 0 -1.5ch;
+    z-index: -1;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--pen) 7%, transparent);
+    opacity: 0;
+    transition: opacity 150ms;
+}
+
+.timeline-post:hover::before,
+.timeline-post:has(.timeline-title:focus-visible)::before {
+    opacity: 1;
+}
+
+.timeline-post:has(.timeline-title:focus-visible)::before {
+    outline: 2px solid var(--pen);
+    outline-offset: -2px;
+}
+
+.timeline-title:focus-visible {
+    outline: none;
+}
+
+.timeline-head-label {
+    font-size: 0.6875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0.02em;
+    color: var(--pen);
 }
 
 /* A new year opens a section: extra room above, the year set in the reading
@@ -110,7 +189,7 @@ const years = computed(() => {
 
 .timeline-year > .timeline-cell {
     padding-top: var(--year-gap);
-    padding-bottom: 1.75rem;
+    padding-bottom: 0.75rem;
 }
 
 .timeline-year-label {
@@ -160,7 +239,7 @@ const years = computed(() => {
 }
 
 .timeline > li:last-child li:last-child .timeline-rail::before {
-    bottom: calc(100% - 0.875rem);
+    bottom: calc(100% - var(--row-pad) - 0.875rem);
 }
 
 .timeline-node,
@@ -169,6 +248,10 @@ const years = computed(() => {
     left: 50%;
     top: 0.875rem;
     translate: -50% -50%;
+}
+
+.timeline-post .timeline-node {
+    top: calc(var(--row-pad) + 0.875rem);
 }
 
 .timeline-year .timeline-branch {
@@ -192,6 +275,16 @@ const years = computed(() => {
     border: 1.5px solid var(--pen);
     border-radius: 999px;
     background: var(--paper);
+    transition: background-color 150ms;
+}
+
+.timeline-post--head .timeline-node {
+    width: 0.75rem;
+    height: 0.75rem;
+    background: var(--pen);
+    box-shadow:
+        0 0 0 3px var(--paper),
+        0 0 0 4px color-mix(in srgb, var(--pen) 45%, transparent);
 }
 
 .timeline-branch {
@@ -214,18 +307,31 @@ const years = computed(() => {
     transition: text-decoration-color 150ms;
 }
 
-.timeline-post:hover .timeline-node {
+.timeline-post:hover .timeline-node,
+.timeline-post:has(.timeline-title:focus-visible) .timeline-node {
     background: var(--pen);
 }
 
-.timeline-title:hover,
+.timeline-post:hover .timeline-title,
 .timeline-title:focus-visible {
     text-decoration-color: var(--pen);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .timeline-post::before,
+    .timeline-node,
+    .timeline-title {
+        transition: none;
+    }
 }
 
 @media (max-width: 640px) {
     .timeline-row {
         grid-template-columns: 6ch 3.5ch minmax(0, 1fr);
+    }
+
+    .timeline-post::before {
+        inset: 0 -0.75rem 0 -0.75rem;
     }
 }
 </style>

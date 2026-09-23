@@ -23,6 +23,6 @@ const blog = computed(() => usePage().props.blog);
         <p class="mt-6 text-[var(--graphite)]">{{ blog.bio }}</p>
     </section>
 
-    <PostTimeline v-if="posts.length" :posts="posts" />
+    <PostTimeline v-if="posts.length" :posts="posts" show-head />
     <p v-else class="text-[var(--graphite)]">Ainda não há posts publicados.</p>
 </template>
