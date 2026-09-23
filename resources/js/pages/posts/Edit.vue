@@ -6,6 +6,7 @@ import PostController from '@/actions/App/Http/Controllers/PostController';
 import Heading from '@/components/Heading.vue';
 import PostDraftBanner from '@/components/posts/PostDraftBanner.vue';
 import PostFormFields from '@/components/posts/PostFormFields.vue';
+import PostPreviewLink from '@/components/posts/PostPreviewLink.vue';
 import PostScheduleForm from '@/components/posts/PostScheduleForm.vue';
 import PostStatusBadge from '@/components/posts/PostStatusBadge.vue';
 import PostStatusButton from '@/components/posts/PostStatusButton.vue';
@@ -85,6 +86,8 @@ function onSaved(): void {
                 <PostStatusButton :post="post" />
             </div>
         </div>
+
+        <PostPreviewLink :post="post" />
 
         <div ref="formContainer" class="space-y-6">
             <PostDraftBanner

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Blog\BlogFeedController;
 use App\Http\Controllers\Blog\BlogPostController;
+use App\Http\Controllers\Blog\BlogPreviewController;
 use App\Http\Controllers\Blog\BlogPrivacyController;
 use App\Http\Controllers\Blog\BlogReadingController;
 use App\Http\Controllers\Blog\BlogSearchController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Blog\SeoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostImageController;
+use App\Http\Controllers\PostPreviewLinkController;
 use App\Http\Controllers\ReadingController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
@@ -42,6 +44,8 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('posts/{post}/preview', [PostController::class, 'preview'])->name('posts.preview');
     Route::patch('posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');
     Route::patch('posts/{post}/unpublish', [PostController::class, 'unpublish'])->name('posts.unpublish');
+    Route::post('posts/{post}/preview-link', [PostPreviewLinkController::class, 'store'])->name('posts.preview-link.store');
+    Route::delete('posts/{post}/preview-link', [PostPreviewLinkController::class, 'destroy'])->name('posts.preview-link.destroy');
 });
 
 Route::prefix('admin')->group(__DIR__.'/settings.php');
@@ -61,6 +65,11 @@ Route::get('search', [BlogSearchController::class, 'index'])
     ->name('blog.search');
 Route::get('tags/{tag:slug}', [BlogTagController::class, 'show'])->name('blog.tags.show');
 Route::get('leituras', [BlogReadingController::class, 'index'])->name('blog.readings.index');
+// Shared preview of a post, outside the blog.* names so it is never indexed.
+Route::get('preview/{token}', [BlogPreviewController::class, 'show'])
+    ->where('token', '[A-Za-z0-9]{40}')
+    ->middleware('throttle:60,1')
+    ->name('preview.show');
 Route::get('privacidade', [BlogPrivacyController::class, 'show'])->name('blog.privacy');
 
 // Addresses used before posts moved to the root and the panel to /admin.

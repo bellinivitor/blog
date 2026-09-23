@@ -16,8 +16,11 @@ defineProps<{
     previous: PublishedPost | null;
     next: PublishedPost | null;
     related: PublishedPost[];
-    /** Present when the author previews the post from the panel. */
-    preview?: { editUrl: string };
+    /**
+     * Present on previews: from the panel (with a way back to the editor)
+     * or through a shared preview link (without one).
+     */
+    preview?: { editUrl: string | null };
 }>();
 
 const body = useTemplateRef<HTMLElement>('body');
@@ -32,7 +35,7 @@ useArticleEnhancements(body);
     <div :key="post.slug">
         <p v-if="preview" class="preview-banner" role="status">
             Pré-visualização: é assim que o post vai ficar publicado.
-            <a :href="preview.editUrl" class="blog-link"
+            <a v-if="preview.editUrl" :href="preview.editUrl" class="blog-link"
                 >Voltar para a edição</a
             >
         </p>

@@ -11,6 +11,8 @@ export type Post = {
     status: PostStatus;
     published_at: string | null;
     views_count: number;
+    /** Public preview link, or null while sharing is disabled. */
+    preview_url: string | null;
     updated_at: string | null;
     deleted_at: string | null;
     tags: Tag[];

@@ -33,6 +33,7 @@ use Illuminate\Database\Query\Builder;
  * @property PostStatus $status
  * @property CarbonImmutable|null $published_at
  * @property CarbonImmutable|null $revised_at
+ * @property string|null $preview_token
  * @property int $views_count
  * @property CarbonImmutable|null $deleted_at
  * @property-read User $author
