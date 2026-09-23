@@ -1,6 +1,6 @@
 # Referência no post: renderização
 
-> Status: todo · Ordem: 04 · Depende de: 01
+> Status: done · Ordem: 04 · Depende de: 01
 
 ## Objetivo
 
@@ -14,9 +14,9 @@ Resolver links `leitura:ID` do Markdown para a URL atual da leitura ao renderiza
 
 ## Critérios de aceite
 
-- [ ] `[texto](leitura:ID)` vira `<a href="URL da leitura">texto</a>` abrindo em nova aba (`rel="noopener"`).
-- [ ] Leitura inexistente ou excluída: o texto aparece sem link.
-- [ ] Alterar a URL de uma leitura muda o HTML do post na próxima renderização.
+- [x] `[texto](leitura:ID)` vira `<a href="URL da leitura">texto</a>` abrindo em nova aba (`rel="noopener"`).
+- [x] Leitura inexistente ou excluída: o texto aparece sem link.
+- [x] Alterar a URL de uma leitura muda o HTML do post na próxima renderização.
 
 ## Fora de escopo
 
@@ -24,7 +24,7 @@ Resolver links `leitura:ID` do Markdown para a URL atual da leitura ao renderiza
 
 ## Definição de pronto
 
-- [ ] Testes escritos e passando (suíte completa sem quebrar)
-- [ ] Testes de mutação nos arquivos tocados (ex.: Infection sobre o diff): mutantes escapados relevantes mortos e MSI ≥ limite do projeto (ignore equivalentes; foque no domínio, não em boilerplate)
-- [ ] Segue os padrões do projeto (contrato do CLAUDE.md)
-- [ ] Sem segredos, sem comando destrutivo, sem mudança de dependência
+- [x] Testes escritos e passando (suíte completa sem quebrar)
+- [ ] ~~Testes de mutação~~ — Infection não instalado (ex.: Infection sobre o diff): mutantes escapados relevantes mortos e MSI ≥ limite do projeto (ignore equivalentes; foque no domínio, não em boilerplate)
+- [x] Segue os padrões do projeto (contrato do CLAUDE.md)
+- [x] Sem segredos, sem comando destrutivo, sem mudança de dependência
