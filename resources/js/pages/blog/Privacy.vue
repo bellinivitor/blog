@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
+import BackToPosts from '@/components/blog/BackToPosts.vue';
 import { COOKIE_NOTICE_STORAGE_KEY } from '@/components/blog/CookieNotice.vue';
 
 defineProps<{
@@ -15,12 +15,7 @@ const blog = computed(() => usePage().props.blog);
     <Head title="Privacidade e cookies" />
 
     <section class="max-w-[68ch] pb-16">
-        <Link
-            :href="BlogPostController.index()"
-            class="text-sm text-[var(--graphite)] hover:text-[var(--ink)]"
-        >
-            Todos os posts
-        </Link>
+        <BackToPosts />
         <h1
             class="mt-4 font-[family-name:var(--font-title)] text-[2rem] leading-tight font-bold tracking-[-0.02em]"
         >

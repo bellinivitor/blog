@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
+import { Head } from '@inertiajs/vue3';
+import BackToPosts from '@/components/blog/BackToPosts.vue';
 import PostTimeline from '@/components/blog/PostTimeline.vue';
 import type { PublishedPost, Tag } from '@/types';
 
@@ -14,12 +14,7 @@ defineProps<{
     <Head :title="tag.name" />
 
     <section class="pb-16">
-        <Link
-            :href="BlogPostController.index()"
-            class="text-sm text-[var(--graphite)] hover:text-[var(--ink)]"
-        >
-            Todos os posts
-        </Link>
+        <BackToPosts />
         <h1
             class="mt-4 font-[family-name:var(--font-title)] text-[2rem] leading-tight font-bold tracking-[-0.02em]"
         >

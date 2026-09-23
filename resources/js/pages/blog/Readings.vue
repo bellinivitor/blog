@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
-import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
+import { Head } from '@inertiajs/vue3';
+import BackToPosts from '@/components/blog/BackToPosts.vue';
 import type { Reading } from '@/types';
 
 defineProps<{
@@ -21,12 +21,7 @@ function hostOf(url: string): string {
     <Head title="Leituras" />
 
     <section class="max-w-[68ch] pb-12">
-        <Link
-            :href="BlogPostController.index()"
-            class="text-sm text-[var(--graphite)] hover:text-[var(--ink)]"
-        >
-            Todos os posts
-        </Link>
+        <BackToPosts />
         <h1
             class="mt-4 font-[family-name:var(--font-title)] text-[2rem] leading-tight font-bold tracking-[-0.02em]"
         >

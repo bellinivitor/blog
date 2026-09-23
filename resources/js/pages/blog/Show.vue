@@ -3,6 +3,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { useTemplateRef } from 'vue';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import BlogTagController from '@/actions/App/Http/Controllers/Blog/BlogTagController';
+import BackToPosts from '@/components/blog/BackToPosts.vue';
 import TableOfContents from '@/components/blog/TableOfContents.vue';
 import { useArticleEnhancements } from '@/composables/useArticleEnhancements';
 import { formatLongDate } from '@/lib/blogDates';
@@ -41,12 +42,7 @@ useArticleEnhancements(body);
             class="xl:grid xl:w-[98ch] xl:grid-cols-[minmax(0,68ch)_24ch] xl:gap-x-[6ch]"
         >
             <header class="max-w-[68ch] pb-12 xl:col-start-1">
-                <Link
-                    :href="BlogPostController.index()"
-                    class="text-sm text-[var(--graphite)] hover:text-[var(--ink)]"
-                >
-                    Todos os posts
-                </Link>
+                <BackToPosts />
                 <h1
                     class="mt-6 font-[family-name:var(--font-title)] text-[clamp(1.75rem,4.5vw,2.375rem)] leading-[1.2] font-bold tracking-[-0.02em] text-balance"
                 >
