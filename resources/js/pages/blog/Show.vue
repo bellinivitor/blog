@@ -9,11 +9,14 @@ import { formatLongDate } from '@/lib/blogDates';
 import type { PublishedPost } from '@/types';
 
 defineProps<{
-    post: PublishedPost;
+    /** In a preview, drafts have no publication date yet. */
+    post: Omit<PublishedPost, 'published_at'> & { published_at: string | null };
     content: string;
     previous: PublishedPost | null;
     next: PublishedPost | null;
     related: PublishedPost[];
+    /** Present when the author previews the post from the panel. */
+    preview?: { editUrl: string };
 }>();
 
 const body = useTemplateRef<HTMLElement>('body');
@@ -26,6 +29,13 @@ useArticleEnhancements(body);
 
     <!-- Keyed by slug so moving to another post rebuilds the TOC and enhancements. -->
     <div :key="post.slug">
+        <p v-if="preview" class="preview-banner" role="status">
+            Pré-visualização: é assim que o post vai ficar publicado.
+            <a :href="preview.editUrl" class="blog-link"
+                >Voltar para a edição</a
+            >
+        </p>
+
         <!-- On wide screens the grid grows past the column so the TOC sits in the right margin. -->
         <article
             class="xl:grid xl:w-[98ch] xl:grid-cols-[minmax(0,68ch)_24ch] xl:gap-x-[6ch]"
@@ -45,9 +55,13 @@ useArticleEnhancements(body);
                 <p
                     class="mt-5 flex flex-wrap gap-x-5 gap-y-1 text-sm text-[var(--graphite)]"
                 >
-                    <time :datetime="post.published_at">
+                    <time
+                        v-if="post.published_at"
+                        :datetime="post.published_at"
+                    >
                         {{ formatLongDate(post.published_at) }}
                     </time>
+                    <span v-else>Não publicado</span>
                     <span>{{ post.reading_minutes }} min de leitura</span>
                     <Link
                         v-for="tag in post.tags"
@@ -136,6 +150,18 @@ useArticleEnhancements(body);
 </template>
 
 <style scoped>
+.preview-banner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2ch;
+    margin-bottom: 2.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px dashed color-mix(in srgb, var(--pen) 55%, transparent);
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--pen) 6%, transparent);
+    font-size: 0.875rem;
+}
+
 .continue-title {
     font-family: var(--font-title);
     font-weight: 700;

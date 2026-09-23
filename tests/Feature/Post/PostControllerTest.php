@@ -413,3 +413,30 @@ test('forbids changing the status of a post of another author', function (string
     'publish' => ['posts.publish', PostStatus::Draft],
     'unpublish' => ['posts.unpublish', PostStatus::Published],
 ]);
+
+describe('preview', function () {
+    test('renders a draft with the public post page', function () {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create(['title' => 'Rascunho', 'content' => '## Intro']);
+
+        $response = $this->actingAs($author)->get(route('posts.preview', $post));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('blog/Show')
+            ->where('post.title', 'Rascunho')
+            ->where('post.published_at', null)
+            ->where('content', '<h2 id="intro">Intro</h2>'."\n")
+            ->where('preview.editUrl', route('posts.edit', $post))
+        );
+        $response->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+        expect($post->fresh()->views_count)->toBe(0);
+    });
+
+    test('forbids previewing a post of another author', function () {
+        $post = Post::factory()->create();
+
+        $response = $this->actingAs(User::factory()->create())->get(route('posts.preview', $post));
+
+        $response->assertForbidden();
+    });
+});

@@ -10,12 +10,14 @@ use App\Models\Post\Post;
 use App\Models\Tag\Tag;
 use Domain\Post\Actions\ChangePostStatusAction;
 use Domain\Post\Actions\DeletePostAction;
+use Domain\Post\Actions\RenderPostContentAction;
 use Domain\Post\Actions\RestorePostAction;
 use Domain\Post\Actions\StorePostAction;
 use Domain\Post\Actions\UpdatePostAction;
 use Domain\Post\DataTransferObjects\PostDTO;
 use Domain\Post\DataTransferObjects\PostSearchDTO;
 use Domain\Post\Resources\PostResource;
+use Domain\Post\Resources\PublishedPostResource;
 use Domain\Post\States\DraftState;
 use Domain\Post\States\PublishedState;
 use Domain\Tag\Resources\TagResource;
@@ -87,6 +89,26 @@ class PostController extends Controller
         return Inertia::render('posts/Edit', [
             'post' => PostResource::make($post->load('tags')),
             'tags' => $this->availableTags(),
+        ]);
+    }
+
+    /**
+     * Show the post exactly as the public page renders it, whatever its
+     * status, so drafts and scheduled posts can be checked before going live.
+     */
+    public function preview(Post $post, RenderPostContentAction $renderPostContent): Response
+    {
+        Gate::authorize('update', $post);
+
+        return Inertia::render('blog/Show', [
+            'post' => PublishedPostResource::make($post->load('tags')),
+            'content' => $renderPostContent($post),
+            'previous' => null,
+            'next' => null,
+            'related' => [],
+            'preview' => [
+                'editUrl' => route('posts.edit', $post),
+            ],
         ]);
     }
 

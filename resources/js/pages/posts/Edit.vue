@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
+import { Eye } from '@lucide/vue';
 import PostController from '@/actions/App/Http/Controllers/PostController';
 import Heading from '@/components/Heading.vue';
 import PostFormFields from '@/components/posts/PostFormFields.vue';
@@ -47,6 +48,15 @@ function formatDateTime(value: string): string {
                 </div>
             </div>
             <div class="flex flex-wrap items-start justify-end gap-2">
+                <Button variant="outline" as-child>
+                    <a
+                        :href="PostController.preview(post).url"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <Eye /> Preview
+                    </a>
+                </Button>
                 <PostScheduleForm v-if="post.status === 'draft'" :post="post" />
                 <PostStatusButton :post="post" />
             </div>

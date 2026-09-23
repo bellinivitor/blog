@@ -30,6 +30,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::patch('posts/{post}/restore', [PostController::class, 'restore'])
         ->withTrashed()
         ->name('posts.restore');
+    Route::get('posts/{post}/preview', [PostController::class, 'preview'])->name('posts.preview');
     Route::patch('posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');
     Route::patch('posts/{post}/unpublish', [PostController::class, 'unpublish'])->name('posts.unpublish');
 });
