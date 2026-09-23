@@ -31,6 +31,6 @@ Páginas públicas, preview de Markdown, upload de imagem, SEO/meta, agendamento
 - [x] [01 — Base da arquitetura](01-base-arquitetura.md) · done
 - [x] [02 — Tag: backend](02-tag-backend.md) · done
 - [x] [03 — Tag: telas](03-tag-telas.md) · done
-- [ ] [04 — Post: backend CRUD](04-post-backend.md) · todo
+- [x] [04 — Post: backend CRUD](04-post-backend.md) · done
 - [ ] [05 — Post: publicação](05-post-publicacao.md) · todo
 - [ ] [06 — Post: telas](06-post-telas.md) · todo
