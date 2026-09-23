@@ -4,13 +4,29 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import MarkdownEditor from './MarkdownEditor.vue';
 import TagInput from './TagInput.vue';
+import type { PostDraftFields } from '@/composables/usePostDraft';
 import type { Post, Tag } from '@/types';
 
 const props = defineProps<{
     errors: Partial<Record<string, string>>;
     tags: Tag[];
     post?: Post;
+    /** Restored local copy; overrides the post's values. */
+    draft?: PostDraftFields | null;
 }>();
+
+const initial = {
+    title: props.draft?.title ?? props.post?.title,
+    slug: props.draft?.slug ?? props.post?.slug,
+    excerpt: props.draft?.excerpt ?? props.post?.excerpt ?? '',
+    content: props.draft?.content ?? props.post?.content,
+    tags: props.draft
+        ? props.tags.filter((tag) =>
+              props.draft?.tag_ids.includes(String(tag.id)),
+          )
+        : props.post?.tags,
+    newTags: props.draft?.new_tags ?? [],
+};
 
 const textareaClass =
     'w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 md:text-sm dark:bg-input/30';
@@ -34,7 +50,7 @@ function tagError(): string | undefined {
                 <Input
                     id="title"
                     name="title"
-                    :default-value="post?.title"
+                    :default-value="initial.title"
                     required
                     autofocus
                     placeholder="My new post"
@@ -47,7 +63,7 @@ function tagError(): string | undefined {
                 <Input
                     id="slug"
                     name="slug"
-                    :default-value="post?.slug"
+                    :default-value="initial.slug"
                     placeholder="Generated from the title when empty"
                 />
                 <InputError :message="errors.slug" />
@@ -61,7 +77,7 @@ function tagError(): string | undefined {
                 name="excerpt"
                 rows="2"
                 :class="textareaClass"
-                :value="post?.excerpt ?? ''"
+                :value="initial.excerpt"
                 placeholder="A short summary shown in listings"
             />
             <InputError :message="errors.excerpt" />
@@ -71,7 +87,7 @@ function tagError(): string | undefined {
             <Label>Content</Label>
             <MarkdownEditor
                 name="content"
-                :default-value="post?.content"
+                :default-value="initial.content"
                 placeholder="Start writing… type / for blocks"
             />
             <InputError :message="errors.content" />
@@ -84,7 +100,8 @@ function tagError(): string | undefined {
                 name="tag_ids"
                 new-name="new_tags"
                 :tags="tags"
-                :default-selected="post?.tags"
+                :default-selected="initial.tags"
+                :default-new-tags="initial.newTags"
             />
             <InputError :message="tagError()" />
         </div>

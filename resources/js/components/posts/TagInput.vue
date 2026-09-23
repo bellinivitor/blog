@@ -7,13 +7,14 @@ import type { Tag } from '@/types';
 const props = defineProps<{
     tags: Tag[];
     defaultSelected?: Tag[];
+    defaultNewTags?: string[];
     name: string;
     newName: string;
     id?: string;
 }>();
 
 const selected = ref<Tag[]>([...(props.defaultSelected ?? [])]);
-const newTags = ref<string[]>([]);
+const newTags = ref<string[]>([...(props.defaultNewTags ?? [])]);
 const query = ref('');
 const isOpen = ref(false);
 const highlightedIndex = ref(0);

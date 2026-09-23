@@ -1,13 +1,17 @@
 <script setup lang="ts">
+import { nextTick, ref, useTemplateRef } from 'vue';
 import { Form, Head, Link } from '@inertiajs/vue3';
 import { Eye } from '@lucide/vue';
 import PostController from '@/actions/App/Http/Controllers/PostController';
 import Heading from '@/components/Heading.vue';
+import PostDraftBanner from '@/components/posts/PostDraftBanner.vue';
 import PostFormFields from '@/components/posts/PostFormFields.vue';
 import PostScheduleForm from '@/components/posts/PostScheduleForm.vue';
 import PostStatusBadge from '@/components/posts/PostStatusBadge.vue';
 import PostStatusButton from '@/components/posts/PostStatusButton.vue';
 import { Button } from '@/components/ui/button';
+import { usePostDraft } from '@/composables/usePostDraft';
+import type { PostDraftFields } from '@/composables/usePostDraft';
 import { isScheduled } from '@/lib/postStatus';
 import type { Post, Tag } from '@/types';
 
@@ -17,7 +21,7 @@ defineOptions({
     },
 });
 
-defineProps<{
+const props = defineProps<{
     post: Post;
     tags: Tag[];
 }>();
@@ -27,6 +31,26 @@ function formatDateTime(value: string): string {
         dateStyle: 'medium',
         timeStyle: 'short',
     }).format(new Date(value));
+}
+
+const formContainer = useTemplateRef<HTMLElement>('formContainer');
+const draft = usePostDraft(
+    String(props.post.id),
+    props.post.updated_at,
+    formContainer,
+);
+const restored = ref<PostDraftFields | null>(null);
+const formVersion = ref(0);
+
+function restoreDraft(): void {
+    restored.value = draft.takePendingDraft();
+    formVersion.value++;
+}
+
+function onSaved(): void {
+    draft.clear();
+    restored.value = null;
+    void nextTick(() => draft.rebase());
 }
 </script>
 
@@ -62,20 +86,37 @@ function formatDateTime(value: string): string {
             </div>
         </div>
 
-        <Form
-            :key="post.updated_at ?? post.id"
-            v-bind="PostController.update.form(post)"
-            class="space-y-6"
-            v-slot="{ errors, processing }"
-        >
-            <PostFormFields :errors="errors" :tags="tags" :post="post" />
+        <div ref="formContainer" class="space-y-6">
+            <PostDraftBanner
+                v-if="draft.pendingDraft.value"
+                :saved-at="draft.pendingDraft.value.savedAt"
+                @restore="restoreDraft"
+                @discard="draft.discard()"
+            />
 
-            <div class="flex items-center gap-4">
-                <Button type="submit" :disabled="processing">Save</Button>
-                <Button variant="ghost" as-child>
-                    <Link :href="PostController.index()">Back to posts</Link>
-                </Button>
-            </div>
-        </Form>
+            <Form
+                :key="`${post.updated_at ?? post.id}-${formVersion}`"
+                v-bind="PostController.update.form(post)"
+                class="space-y-6"
+                v-slot="{ errors, processing }"
+                @success="onSaved"
+            >
+                <PostFormFields
+                    :errors="errors"
+                    :tags="tags"
+                    :post="post"
+                    :draft="restored"
+                />
+
+                <div class="flex items-center gap-4">
+                    <Button type="submit" :disabled="processing">Save</Button>
+                    <Button variant="ghost" as-child>
+                        <Link :href="PostController.index()"
+                            >Back to posts</Link
+                        >
+                    </Button>
+                </div>
+            </Form>
+        </div>
     </div>
 </template>
