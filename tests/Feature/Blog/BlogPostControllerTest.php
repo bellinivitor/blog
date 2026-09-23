@@ -63,10 +63,23 @@ describe('index', function () {
     });
 });
 
-test('redirects the old /blog address to the home page permanently', function () {
-    $response = $this->get('/blog');
+test('redirects addresses from before posts moved to the root', function (string $old, string $new) {
+    $response = $this->get($old);
 
-    $response->assertMovedPermanently()->assertRedirect('/');
+    $response->assertMovedPermanently()->assertRedirect($new);
+})->with([
+    'home' => ['/blog', '/'],
+    'post' => ['/blog/hello', '/hello'],
+    'tag' => ['/blog/tags/vue', '/tags/vue'],
+    'feed' => ['/blog/feed', '/feed'],
+    'dashboard' => ['/dashboard', '/admin'],
+    'login' => ['/login', '/admin/login'],
+]);
+
+test('serves posts at the root of the site', function () {
+    Post::factory()->published()->create(['slug' => 'hello']);
+
+    $this->get('/hello')->assertOk();
 });
 
 describe('show', function () {

@@ -14,6 +14,7 @@ readonly class UpdatePostAction
     public function __construct(
         private GenerateUniqueSlugAction $generateUniqueSlugAction,
         private FindOrCreateTagsAction $findOrCreateTagsAction,
+        private ListReservedSlugsAction $listReservedSlugs,
     ) {}
 
     /**
@@ -26,7 +27,7 @@ readonly class UpdatePostAction
 
             $post->fill([
                 'title' => $postDTO->title,
-                'slug' => $postDTO->slug ?? ($this->generateUniqueSlugAction)($postDTO->title, Post::class, $post->id, Post::RESERVED_SLUGS),
+                'slug' => $postDTO->slug ?? ($this->generateUniqueSlugAction)($postDTO->title, Post::class, $post->id, ($this->listReservedSlugs)()),
                 'excerpt' => $postDTO->excerpt,
                 'content' => $postDTO->content,
             ]);

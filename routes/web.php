@@ -10,20 +10,14 @@ use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [BlogPostController::class, 'index'])->name('home');
-Route::permanentRedirect('blog', '/');
-Route::get('sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
-Route::get('robots.txt', [SeoController::class, 'robots'])->name('robots');
+/*
+|--------------------------------------------------------------------------
+| Admin panel (everything under /admin; Fortify uses the same prefix)
+|--------------------------------------------------------------------------
+*/
 
-Route::get('blog/search', [BlogSearchController::class, 'index'])
-    ->middleware('throttle:60,1')
-    ->name('blog.search');
-Route::get('blog/feed', [BlogFeedController::class, 'index'])->name('blog.feed');
-Route::get('blog/tags/{tag:slug}', [BlogTagController::class, 'show'])->name('blog.tags.show');
-Route::get('blog/{slug}', [BlogPostController::class, 'show'])->name('blog.posts.show');
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
+    Route::inertia('/', 'Dashboard')->name('dashboard');
 
     Route::resource('tags', TagController::class)->except('show');
     Route::patch('tags/{tag}/restore', [TagController::class, 'restore'])
@@ -39,4 +33,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('posts/{post}/unpublish', [PostController::class, 'unpublish'])->name('posts.unpublish');
 });
 
-require __DIR__.'/settings.php';
+Route::prefix('admin')->group(__DIR__.'/settings.php');
+
+/*
+|--------------------------------------------------------------------------
+| Public blog
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', [BlogPostController::class, 'index'])->name('home');
+Route::get('sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+Route::get('robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('feed', [BlogFeedController::class, 'index'])->name('blog.feed');
+Route::get('search', [BlogSearchController::class, 'index'])
+    ->middleware('throttle:60,1')
+    ->name('blog.search');
+Route::get('tags/{tag:slug}', [BlogTagController::class, 'show'])->name('blog.tags.show');
+
+// Addresses used before posts moved to the root and the panel to /admin.
+Route::permanentRedirect('dashboard', '/admin');
+Route::permanentRedirect('login', '/admin/login');
+Route::permanentRedirect('blog', '/');
+Route::permanentRedirect('blog/feed', '/feed');
+Route::get('blog/tags/{slug}', fn (string $slug) => redirect()->route('blog.tags.show', $slug, 301));
+Route::get('blog/{slug}', fn (string $slug) => redirect()->route('blog.posts.show', $slug, 301));
+
+// Must stay last: any other single segment is a post slug.
+Route::get('{slug}', [BlogPostController::class, 'show'])
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->name('blog.posts.show');

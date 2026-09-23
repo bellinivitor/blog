@@ -169,7 +169,7 @@ describe('store', function () {
 
         $response->assertInvalid(['slug' => 'This slug is reserved by the blog. Choose another one.']);
         $this->assertDatabaseCount('posts', 0);
-    })->with(['feed', 'search', 'tags']);
+    })->with(['admin', 'feed', 'search', 'tags', 'blog', 'storage']);
 
     test('never generates a reserved slug from the title', function () {
         $this->actingAs(User::factory()->create())

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Post;
 
-use App\Models\Post\Post;
+use Domain\Post\Actions\ListReservedSlugsAction;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -19,7 +19,7 @@ class StorePostRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::notIn(Post::RESERVED_SLUGS), $this->uniqueSlugRule()],
+            'slug' => ['nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::notIn(app(ListReservedSlugsAction::class)()), $this->uniqueSlugRule()],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'tag_ids' => ['nullable', 'array'],

@@ -14,17 +14,7 @@ class SeoController extends Controller
      *
      * @var array<int, string>
      */
-    private const array PRIVATE_PATHS = [
-        '/dashboard',
-        '/posts',
-        '/tags',
-        '/settings',
-        '/login',
-        '/forgot-password',
-        '/reset-password',
-        '/two-factor-challenge',
-        '/user',
-    ];
+    private const array PRIVATE_PATHS = ['/admin'];
 
     /**
      * XML sitemap of the public blog: home, published posts and tags that

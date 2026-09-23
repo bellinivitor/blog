@@ -37,9 +37,7 @@ test('robots.txt points to the sitemap and disallows the admin', function () {
 
     $response->assertOk()
         ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
-        ->assertSee('Disallow: /dashboard')
-        ->assertSee('Disallow: /posts')
-        ->assertSee('Disallow: /login')
+        ->assertSee('Disallow: /admin')
         ->assertSee('Sitemap: '.route('sitemap'));
 });
 
@@ -48,9 +46,9 @@ test('private pages ask search engines not to index them', function (string $pat
 
     $response->assertHeader('X-Robots-Tag', 'noindex, nofollow');
 })->with([
-    'login' => '/login',
-    'dashboard (redirects guests)' => '/dashboard',
-    'admin posts (redirects guests)' => '/posts',
+    'login' => '/admin/login',
+    'dashboard (redirects guests)' => '/admin',
+    'admin posts (redirects guests)' => '/admin/posts',
 ]);
 
 test('public blog pages stay indexable', function () {
