@@ -3,6 +3,8 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import BlogFeedController from '@/actions/App/Http/Controllers/Blog/BlogFeedController';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
+import BlogPrivacyController from '@/actions/App/Http/Controllers/Blog/BlogPrivacyController';
+import CookieNotice from '@/components/blog/CookieNotice.vue';
 import SearchDialog from '@/components/blog/SearchDialog.vue';
 import ThemeToggle from '@/components/blog/ThemeToggle.vue';
 import { dashboard } from '@/routes';
@@ -44,6 +46,12 @@ const feedUrl = BlogFeedController.index().url;
                 <span class="flex gap-5">
                     <a :href="feedUrl" class="hover:text-[var(--ink)]">RSS</a>
                     <Link
+                        :href="BlogPrivacyController.show()"
+                        class="hover:text-[var(--ink)]"
+                    >
+                        Privacidade
+                    </Link>
+                    <Link
                         :href="dashboard()"
                         rel="nofollow"
                         class="hover:text-[var(--ink)]"
@@ -53,5 +61,7 @@ const feedUrl = BlogFeedController.index().url;
                 </span>
             </footer>
         </div>
+
+        <CookieNotice />
     </div>
 </template>
