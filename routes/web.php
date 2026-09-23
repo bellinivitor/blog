@@ -1,11 +1,17 @@
 <?php
 
+use App\Http\Controllers\Blog\BlogPostController;
+use App\Http\Controllers\Blog\BlogTagController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
 Route::inertia('/', 'Welcome')->name('home');
+
+Route::get('blog', [BlogPostController::class, 'index'])->name('blog.index');
+Route::get('blog/tags/{tag:slug}', [BlogTagController::class, 'show'])->name('blog.tags.show');
+Route::get('blog/{slug}', [BlogPostController::class, 'show'])->name('blog.posts.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');

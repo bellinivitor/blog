@@ -38,6 +38,12 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            'blog' => fn (): array => [
+                'author' => config('blog.author'),
+                'headline' => config('blog.headline'),
+                'bio' => config('blog.bio'),
+                'links' => config('blog.links'),
+            ],
             'auth' => [
                 'user' => $request->user(),
             ],

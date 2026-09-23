@@ -5,6 +5,7 @@ namespace Domain\Post\QueryBuilders;
 use App\Models\Post\Post;
 use App\Models\User;
 use Domain\Post\DataTransferObjects\PostSearchDTO;
+use Domain\Post\Enums\PostStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -15,6 +16,18 @@ class PostQueryBuilder extends Builder
     public function ownedBy(User $user): static
     {
         $this->where('author_id', $user->id);
+
+        return $this;
+    }
+
+    /**
+     * Posts visible on the public blog: published and not scheduled for later.
+     */
+    public function published(): static
+    {
+        $this->where('status', PostStatus::Published)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
 
         return $this;
     }
