@@ -3,6 +3,7 @@
 namespace Domain\Post\Resources;
 
 use App\Models\Post\Post;
+use Domain\Post\Actions\ExtractPostPlainTextAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
@@ -34,7 +35,7 @@ class PostSearchResultResource extends JsonResource
 
     private function snippet(string $term): string
     {
-        $text = $this->plainText();
+        $text = app(ExtractPostPlainTextAction::class)($this->content);
         $position = $term === '' ? false : mb_stripos($text, trim($term));
 
         if ($position === false) {
@@ -47,21 +48,5 @@ class PostSearchResultResource extends JsonResource
         return ($start > 0 ? '…' : '')
             .trim($snippet)
             .($start + self::SNIPPET_LENGTH < mb_strlen($text) ? '…' : '');
-    }
-
-    /**
-     * The Markdown content without its syntax, on a single line.
-     */
-    private function plainText(): string
-    {
-        $text = preg_replace([
-            '/```[^\n]*\n?/',
-            '/!\[([^\]]*)\]\([^)]*\)/',
-            '/\[([^\]]*)\]\([^)]*\)/',
-            '/^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+/m',
-            '/[*_`~]/',
-        ], ['', '$1', '$1', '', ''], $this->content) ?? $this->content;
-
-        return trim((string) preg_replace('/\s+/u', ' ', $text));
     }
 }

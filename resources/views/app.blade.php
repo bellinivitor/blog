@@ -41,8 +41,13 @@
         @fonts
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
+        @isset($meta)
+            @include('partials.page-meta')
+        @endisset
+
         <x-inertia::head>
-            <title>{{ config('app.name', 'Blog') }}</title>
+            {{-- Same "Title - App" format the client-side <Head> uses after navigation. --}}
+            <title>{{ isset($meta) ? $meta->title.' - '.config('app.name', 'Blog') : config('app.name', 'Blog') }}</title>
         </x-inertia::head>
     </head>
     <body class="font-sans antialiased">
