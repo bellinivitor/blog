@@ -2,6 +2,7 @@
 import InputError from '@/components/InputError.vue';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import MarkdownEditor from './MarkdownEditor.vue';
 import TagInput from './TagInput.vue';
 import type { Post, Tag } from '@/types';
 
@@ -65,15 +66,11 @@ function tagError(): string | undefined {
         </div>
 
         <div class="grid gap-2">
-            <Label for="content">Content (Markdown)</Label>
-            <textarea
-                id="content"
+            <Label>Content</Label>
+            <MarkdownEditor
                 name="content"
-                rows="18"
-                required
-                :class="[textareaClass, 'font-mono']"
-                :value="post?.content ?? ''"
-                placeholder="# Hello world"
+                :default-value="post?.content"
+                placeholder="Start writing… type / for blocks"
             />
             <InputError :message="errors.content" />
         </div>
