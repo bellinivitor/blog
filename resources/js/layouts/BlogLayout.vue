@@ -41,10 +41,10 @@ const feedUrl = BlogFeedController.index().url;
             </main>
 
             <footer
-                class="mt-24 flex items-baseline justify-between gap-6 border-t border-[var(--rule)] py-8 text-sm text-[var(--graphite)]"
+                class="mt-24 flex flex-col gap-3 border-t border-[var(--rule)] py-8 text-sm text-[var(--graphite)] sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
             >
                 <span>{{ blog.author }}, {{ year }}.</span>
-                <span class="flex gap-5">
+                <span class="flex flex-wrap gap-x-5 gap-y-2">
                     <Link
                         :href="BlogReadingController.index()"
                         class="hover:text-[var(--ink)]"
