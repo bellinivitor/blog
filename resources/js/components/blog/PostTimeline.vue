@@ -207,7 +207,7 @@ const years = computed(() => {
     color: var(--graphite);
 }
 
-/* The rail: one continuous line, like `git log --graph`. */
+/* The rail: one thin continuous line, like `git log --graph`. */
 .timeline-rail {
     position: relative;
 }
@@ -219,7 +219,7 @@ const years = computed(() => {
     bottom: 0;
     left: 50%;
     width: 1px;
-    background: color-mix(in srgb, var(--pen) 45%, transparent);
+    background: var(--rule);
 }
 
 .timeline-post:first-child .timeline-rail::before {
@@ -241,22 +241,33 @@ const years = computed(() => {
     top: calc(var(--row-pad) + 0.875rem);
 }
 
+/*
+ * A small dot with a thin ring, and a disc of the row's own background
+ * around it so the rail stops short of the dot.
+ */
 .timeline-node {
-    width: 0.625rem;
-    height: 0.625rem;
-    border: 1.5px solid var(--pen);
+    --node-gap: var(--paper);
+
+    width: 0.375rem;
+    height: 0.375rem;
     border-radius: 999px;
-    background: var(--paper);
-    transition: background-color 150ms;
+    background: var(--panel);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--graphite) 55%, transparent),
+        0 0 0 8px var(--node-gap);
+    transition:
+        background-color 150ms,
+        box-shadow 150ms;
 }
 
+/* The newest post: the dot takes the accent. */
 .timeline-post--head .timeline-node {
-    width: 0.75rem;
-    height: 0.75rem;
+    width: 0.5rem;
+    height: 0.5rem;
     background: var(--pen);
     box-shadow:
-        0 0 0 3px var(--paper),
-        0 0 0 4px color-mix(in srgb, var(--pen) 45%, transparent);
+        0 0 0 1px var(--pen),
+        0 0 0 8px var(--node-gap);
 }
 
 .timeline-title {
@@ -273,7 +284,13 @@ const years = computed(() => {
 
 .timeline-post:hover .timeline-node,
 .timeline-post:has(.timeline-title:focus-visible) .timeline-node {
+    /* Matches the row's hover wash, so the gap stays invisible. */
+    --node-gap: color-mix(in srgb, var(--pen) 7%, var(--paper));
+
     background: var(--pen);
+    box-shadow:
+        0 0 0 1px var(--pen),
+        0 0 0 8px var(--node-gap);
 }
 
 .timeline-post:hover .timeline-title,
