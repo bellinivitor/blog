@@ -9,7 +9,8 @@
     --ink: #262219;
     --graphite: #6b6456;
     --rule: #e2d9c4;
-    --pen: #2b55e0;
+    /* Blue-black fountain-pen ink: sits on warm paper without glaring. */
+    --pen: #2d4a7c;
     --panel: #eee6d3;
 
     --font-text: 'Monaspace Neon', ui-monospace, SFMono-Regular, Menlo, monospace;
