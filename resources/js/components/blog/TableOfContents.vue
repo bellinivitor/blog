@@ -13,48 +13,60 @@ const props = defineProps<{
 }>();
 
 const headings = ref<Heading[]>([]);
-const activeId = ref<string | null>(null);
+const activeIds = ref<Set<string>>(new Set());
 
-/** Share of the viewport, from the top, where a heading counts as "being read". */
-const READING_LINE = 0.3;
+/** Pixels of a section that must be on screen for it to count as visible. */
+const MIN_VISIBLE = 48;
 
+let article: HTMLElement | null = null;
 let elements: HTMLElement[] = [];
-let lockedUntil = 0;
 let frame = 0;
 
 function collectHeadings(root: HTMLElement): HTMLElement[] {
     return [...root.querySelectorAll<HTMLElement>('h2[id], h3[id]')];
 }
 
-function updateActiveHeading(): void {
+/**
+ * Mark every section currently on screen. A section runs from its heading
+ * to the next one (or the end of the article), so the highlighted items read
+ * as one continuous stretch of the rail.
+ */
+function updateActiveHeadings(): void {
     frame = 0;
 
-    if (Date.now() < lockedUntil || elements.length === 0) {
+    if (!article || elements.length === 0) {
         return;
     }
 
-    const reachedBottom =
-        window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 2;
+    const articleBottom = article.getBoundingClientRect().bottom;
+    const visible = new Set<string>();
 
-    if (reachedBottom) {
-        activeId.value = elements[elements.length - 1].id;
+    elements.forEach((el, index) => {
+        const top = el.getBoundingClientRect().top;
+        const bottom =
+            elements[index + 1]?.getBoundingClientRect().top ?? articleBottom;
+        const onScreen =
+            Math.min(bottom, window.innerHeight) - Math.max(top, 0);
 
-        return;
-    }
+        if (onScreen >= Math.min(MIN_VISIBLE, bottom - top)) {
+            visible.add(el.id);
+        }
+    });
 
-    const line = window.innerHeight * READING_LINE;
-    const passed = elements.filter(
-        (el) => el.getBoundingClientRect().top <= line,
-    );
-
-    activeId.value = (passed.at(-1) ?? elements[0]).id;
+    activeIds.value = visible;
 }
 
 function onScroll(): void {
     if (!frame) {
-        frame = requestAnimationFrame(updateActiveHeading);
+        frame = requestAnimationFrame(updateActiveHeadings);
     }
+}
+
+function isFirstActive(id: string): boolean {
+    return (
+        headings.value.find((heading) => activeIds.value.has(heading.id))
+            ?.id === id
+    );
 }
 
 function scrollTo(event: MouseEvent, id: string): void {
@@ -70,16 +82,12 @@ function scrollTo(event: MouseEvent, id: string): void {
         '(prefers-reduced-motion: reduce)',
     ).matches;
 
-    // Keep the clicked item highlighted while the smooth scroll runs, even
-    // when the heading cannot reach the top (end of the page).
-    lockedUntil = Date.now() + (reduceMotion ? 0 : 900);
-    activeId.value = id;
-
     target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
     history.replaceState(null, '', `#${encodeURIComponent(id)}`);
 }
 
 function build(source: HTMLElement): void {
+    article = source;
     elements = collectHeadings(source);
 
     headings.value = elements.map((el) => ({
@@ -88,7 +96,7 @@ function build(source: HTMLElement): void {
         level: el.tagName === 'H3' ? 3 : 2,
     }));
 
-    updateActiveHeading();
+    updateActiveHeadings();
 }
 
 watch(
@@ -101,10 +109,14 @@ watch(
     { immediate: true, flush: 'post' },
 );
 
-onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }));
+onMounted(() => {
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+});
 
 onBeforeUnmount(() => {
     window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('resize', onScroll);
     cancelAnimationFrame(frame);
 });
 </script>
@@ -124,10 +136,10 @@ onBeforeUnmount(() => {
                     class="toc-link"
                     :class="{
                         'toc-link--nested': heading.level === 3,
-                        'toc-link--active': heading.id === activeId,
+                        'toc-link--active': activeIds.has(heading.id),
                     }"
                     :aria-current="
-                        heading.id === activeId ? 'location' : undefined
+                        isFirstActive(heading.id) ? 'location' : undefined
                     "
                     @click="scrollTo($event, heading.id)"
                 >
@@ -165,12 +177,13 @@ onBeforeUnmount(() => {
     color: var(--ink);
 }
 
-/* Same language as the timeline rail: a pen-blue mark on the line. */
+/* Same language as the timeline rail: a pen-blue stretch on the line that
+   spans every section on screen. */
 .toc-link--active::before {
     content: '';
     position: absolute;
-    top: 0.3rem;
-    bottom: 0.3rem;
+    top: 0;
+    bottom: 0;
     left: -1px;
     width: 2px;
     background: var(--pen);
