@@ -34,6 +34,10 @@
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
+        @if (request()->routeIs('home', 'blog.*'))
+            <link rel="alternate" type="application/rss+xml" title="{{ config('blog.author') }}" href="{{ route('blog.feed') }}">
+        @endif
+
         @fonts
 
         @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])

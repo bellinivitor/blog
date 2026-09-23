@@ -163,6 +163,21 @@ describe('store', function () {
         $this->assertDatabaseCount('tags', 0);
     });
 
+    test('rejects slugs reserved by blog routes', function (string $slug) {
+        $response = $this->actingAs(User::factory()->create())
+            ->post(route('posts.store'), validPostPayload(['slug' => $slug]));
+
+        $response->assertInvalid(['slug' => 'This slug is reserved by the blog. Choose another one.']);
+        $this->assertDatabaseCount('posts', 0);
+    })->with(['feed', 'search', 'tags']);
+
+    test('never generates a reserved slug from the title', function () {
+        $this->actingAs(User::factory()->create())
+            ->post(route('posts.store'), validPostPayload(['title' => 'Feed']));
+
+        expect(Post::query()->sole()->slug)->toBe('feed-2');
+    });
+
     test('requires a title and content', function () {
         $response = $this->actingAs(User::factory()->create())
             ->post(route('posts.store'), []);

@@ -26,7 +26,7 @@ readonly class UpdatePostAction
 
             $post->fill([
                 'title' => $postDTO->title,
-                'slug' => $postDTO->slug ?? ($this->generateUniqueSlugAction)($postDTO->title, Post::class, $post->id),
+                'slug' => $postDTO->slug ?? ($this->generateUniqueSlugAction)($postDTO->title, Post::class, $post->id, Post::RESERVED_SLUGS),
                 'excerpt' => $postDTO->excerpt,
                 'content' => $postDTO->content,
             ]);

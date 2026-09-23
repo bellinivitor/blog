@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Blog\BlogFeedController;
 use App\Http\Controllers\Blog\BlogPostController;
 use App\Http\Controllers\Blog\BlogSearchController;
 use App\Http\Controllers\Blog\BlogTagController;
@@ -17,6 +18,7 @@ Route::get('robots.txt', [SeoController::class, 'robots'])->name('robots');
 Route::get('blog/search', [BlogSearchController::class, 'index'])
     ->middleware('throttle:60,1')
     ->name('blog.search');
+Route::get('blog/feed', [BlogFeedController::class, 'index'])->name('blog.feed');
 Route::get('blog/tags/{tag:slug}', [BlogTagController::class, 'show'])->name('blog.tags.show');
 Route::get('blog/{slug}', [BlogPostController::class, 'show'])->name('blog.posts.show');
 

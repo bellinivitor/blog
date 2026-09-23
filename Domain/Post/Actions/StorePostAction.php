@@ -31,7 +31,7 @@ readonly class StorePostAction
             $post = new Post;
             $post->fill([
                 'title' => $postDTO->title,
-                'slug' => $postDTO->slug ?? ($this->generateUniqueSlugAction)($postDTO->title, Post::class),
+                'slug' => $postDTO->slug ?? ($this->generateUniqueSlugAction)($postDTO->title, Post::class, reserved: Post::RESERVED_SLUGS),
                 'excerpt' => $postDTO->excerpt,
                 'content' => $postDTO->content,
             ]);

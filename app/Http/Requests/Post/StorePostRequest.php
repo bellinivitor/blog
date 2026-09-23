@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Post;
 
+use App\Models\Post\Post;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -18,7 +19,7 @@ class StorePostRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $this->uniqueSlugRule()],
+            'slug' => ['nullable', 'string', 'max:255', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::notIn(Post::RESERVED_SLUGS), $this->uniqueSlugRule()],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'content' => ['required', 'string'],
             'tag_ids' => ['nullable', 'array'],
@@ -36,6 +37,7 @@ class StorePostRequest extends FormRequest
         return [
             'slug.regex' => 'The slug may only contain lowercase letters, numbers and single hyphens.',
             'tag_ids.*.exists' => 'The selected tag does not exist.',
+            'slug.not_in' => 'This slug is reserved by the blog. Choose another one.',
         ];
     }
 

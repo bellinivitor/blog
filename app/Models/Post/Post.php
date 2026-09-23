@@ -42,6 +42,13 @@ class Post extends DefaultModel
     use SoftDeletes;
 
     /**
+     * Slugs taken by fixed routes under /blog, so no post can use them.
+     *
+     * @var array<int, string>
+     */
+    public const array RESERVED_SLUGS = ['feed', 'search', 'tags'];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
