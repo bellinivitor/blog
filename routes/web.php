@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->withTrashed()
         ->name('tags.restore');
 
+    Route::post('posts/images', [PostImageController::class, 'store'])->name('posts.images.store');
     Route::resource('posts', PostController::class)->except('show');
     Route::patch('posts/{post}/restore', [PostController::class, 'restore'])
         ->withTrashed()
