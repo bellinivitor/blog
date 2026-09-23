@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Post\Post;
 use Domain\Post\Actions\BuildPostPageMetaAction;
 use Domain\Post\Actions\FindRelatedPostsAction;
+use Domain\Post\Actions\RecordPostViewAction;
 use Domain\Post\Actions\RenderPostContentAction;
+use Domain\Post\DataTransferObjects\PostViewDTO;
 use Domain\Post\Resources\PublishedPostResource;
 use Domain\Shared\DataTransferObjects\PageMetaDTO;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -40,16 +43,20 @@ class BlogPostController extends Controller
      * A single published post.
      */
     public function show(
+        Request $request,
         string $slug,
         RenderPostContentAction $renderPostContent,
         BuildPostPageMetaAction $buildPageMeta,
         FindRelatedPostsAction $findRelatedPosts,
+        RecordPostViewAction $recordPostView,
     ): Response {
         $post = Post::query()
             ->published()
             ->where('slug', $slug)
             ->with('tags')
             ->firstOrFail();
+
+        $recordPostView($post, PostViewDTO::fromHttpRequest($request));
 
         $previous = Post::query()->publishedBefore($post)->with('tags')->first();
         $next = Post::query()->publishedAfter($post)->with('tags')->first();

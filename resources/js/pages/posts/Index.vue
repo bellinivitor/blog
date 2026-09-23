@@ -117,6 +117,7 @@ function formatDate(value: string | null): string {
                         <th class="px-4 py-3 font-medium">Status</th>
                         <th class="px-4 py-3 font-medium">Tags</th>
                         <th class="px-4 py-3 font-medium">Published</th>
+                        <th class="px-4 py-3 text-right font-medium">Views</th>
                         <th class="px-4 py-3 text-right font-medium">
                             <span class="sr-only">Actions</span>
                         </th>
@@ -150,6 +151,11 @@ function formatDate(value: string | null): string {
                         </td>
                         <td class="px-4 py-3 text-muted-foreground">
                             {{ formatDate(post.published_at) }}
+                        </td>
+                        <td
+                            class="px-4 py-3 text-right text-muted-foreground tabular-nums"
+                        >
+                            {{ post.views_count }}
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end gap-2">
@@ -195,7 +201,7 @@ function formatDate(value: string | null): string {
                     </tr>
                     <tr v-if="posts.data.length === 0">
                         <td
-                            colspan="5"
+                            colspan="6"
                             class="px-4 py-10 text-center text-muted-foreground"
                         >
                             {{

@@ -10,6 +10,7 @@ export type Post = {
     content: string;
     status: PostStatus;
     published_at: string | null;
+    views_count: number;
     updated_at: string | null;
     deleted_at: string | null;
     tags: Tag[];
@@ -20,4 +21,11 @@ export type PostFilters = {
     status: PostStatus | null;
     tag_id: number | null;
     trashed: boolean;
+};
+
+export type MostReadPost = {
+    id: number;
+    title: string;
+    slug: string;
+    views_count: number;
 };

@@ -25,6 +25,7 @@ class PostResource extends JsonResource
             'content' => $this->content,
             'status' => $this->status->value,
             'published_at' => $this->published_at?->toIso8601String(),
+            'views_count' => $this->views_count,
             'updated_at' => $this->updated_at?->toIso8601String(),
             'deleted_at' => $this->deleted_at?->toIso8601String(),
             'tags' => TagResource::collection($this->whenLoaded('tags')),

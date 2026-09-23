@@ -5,6 +5,7 @@ use App\Http\Controllers\Blog\BlogPostController;
 use App\Http\Controllers\Blog\BlogSearchController;
 use App\Http\Controllers\Blog\BlogTagController;
 use App\Http\Controllers\Blog\SeoController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostImageController;
 use App\Http\Controllers\TagController;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('/', 'Dashboard')->name('dashboard');
+    Route::get('/', DashboardController::class)->name('dashboard');
 
     Route::resource('tags', TagController::class)->except('show');
     Route::patch('tags/{tag}/restore', [TagController::class, 'restore'])

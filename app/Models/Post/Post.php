@@ -32,6 +32,7 @@ use Illuminate\Database\Query\Builder;
  * @property string|null $search_content
  * @property PostStatus $status
  * @property CarbonImmutable|null $published_at
+ * @property int $views_count
  * @property CarbonImmutable|null $deleted_at
  * @property-read User $author
  * @property-read Collection<int, Tag> $tags
