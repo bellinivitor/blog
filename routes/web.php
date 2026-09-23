@@ -18,6 +18,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('posts/{post}/restore', [PostController::class, 'restore'])
         ->withTrashed()
         ->name('posts.restore');
+    Route::patch('posts/{post}/publish', [PostController::class, 'publish'])->name('posts.publish');
+    Route::patch('posts/{post}/unpublish', [PostController::class, 'unpublish'])->name('posts.unpublish');
 });
 
 require __DIR__.'/settings.php';

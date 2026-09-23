@@ -1,6 +1,6 @@
 # Post: publicação
 
-> Status: todo · Ordem: 05 · Depende de: 04
+> Status: done · Ordem: 05 · Depende de: 04
 
 ## Objetivo
 Permitir publicar e despublicar posts usando o State pattern da arquitetura.
@@ -11,19 +11,19 @@ Permitir publicar e despublicar posts usando o State pattern da arquitetura.
 - Restrições: States puros (só retornam o enum; podem lançar exception em transição inválida). A Action persiste o status e ajusta `published_at` (preenche ao publicar se vazio; mantém ao despublicar) em transação. Policy: só o autor.
 
 ## Critérios de aceite
-- [ ] Publicar um rascunho muda o status para `published` e preenche `published_at`.
-- [ ] Despublicar volta para `draft`.
-- [ ] Publicar um já publicado (ou despublicar um rascunho) é rejeitado com erro adequado.
-- [ ] Não autor recebe 403.
-- [ ] Testes Unit (States, Action) e Feature (rotas).
+- [x] Publicar um rascunho muda o status para `published` e preenche `published_at`.
+- [x] Despublicar volta para `draft`.
+- [x] Publicar um já publicado (ou despublicar um rascunho) é rejeitado com erro adequado.
+- [x] Não autor recebe 403.
+- [x] Testes Unit (States, Action) e Feature (rotas).
 
 ## Fora de escopo
 - Agendamento de publicação.
 - Telas (task 06).
 
 ## Definição de pronto
-- [ ] Testes escritos e passando (suíte completa sem quebrar)
-- [ ] Pint rodado (`vendor/bin/pint --dirty --format agent`)
-- [ ] Checklist de revisão do `docs/architecture/AGENTS.md` atendido
-- [ ] Segue os padrões do projeto (contrato do CLAUDE.md)
-- [ ] Sem segredos, sem comando destrutivo, sem mudança de dependência
+- [x] Testes escritos e passando (suíte completa sem quebrar)
+- [x] Pint rodado (`vendor/bin/pint --dirty --format agent`)
+- [x] Checklist de revisão do `docs/architecture/AGENTS.md` atendido
+- [x] Segue os padrões do projeto (contrato do CLAUDE.md)
+- [x] Sem segredos, sem comando destrutivo, sem mudança de dependência

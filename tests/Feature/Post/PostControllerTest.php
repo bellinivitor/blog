@@ -260,3 +260,54 @@ test('forbids managing a post of another author', function (string $method, stri
     'destroy' => ['delete', 'posts.destroy', false],
     'restore' => ['patch', 'posts.restore', true],
 ]);
+
+describe('publish', function () {
+    test('publishes a draft post', function () {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->create();
+
+        $response = $this->actingAs($author)
+            ->from(route('posts.edit', $post))
+            ->patch(route('posts.publish', $post));
+
+        $response->assertRedirect(route('posts.edit', $post));
+        expect($post->refresh())
+            ->status->toBe(PostStatus::Published)
+            ->published_at->not->toBeNull();
+    });
+
+    test('returns 409 when the post is already published', function () {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->published()->create();
+
+        $response = $this->actingAs($author)->patch(route('posts.publish', $post));
+
+        $response->assertConflict();
+    });
+});
+
+describe('unpublish', function () {
+    test('moves a published post back to draft', function () {
+        $author = User::factory()->create();
+        $post = Post::factory()->for($author, 'author')->published()->create();
+
+        $response = $this->actingAs($author)
+            ->from(route('posts.index'))
+            ->patch(route('posts.unpublish', $post));
+
+        $response->assertRedirect(route('posts.index'));
+        expect($post->refresh()->status)->toBe(PostStatus::Draft);
+    });
+});
+
+test('forbids changing the status of a post of another author', function (string $route, PostStatus $status) {
+    $post = Post::factory()->create(['status' => $status]);
+
+    $response = $this->actingAs(User::factory()->create())->patch(route($route, $post));
+
+    $response->assertForbidden();
+    expect($post->refresh()->status)->toBe($status);
+})->with([
+    'publish' => ['posts.publish', PostStatus::Draft],
+    'unpublish' => ['posts.unpublish', PostStatus::Published],
+]);

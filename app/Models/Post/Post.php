@@ -5,6 +5,7 @@ namespace App\Models\Post;
 use App\Models\DefaultModel;
 use App\Models\Tag\Tag;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Database\Factories\Post\PostFactory;
 use Domain\Post\Enums\PostStatus;
 use Domain\Post\Policies\PostPolicy;
@@ -17,7 +18,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
@@ -27,8 +27,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $excerpt
  * @property string $content
  * @property PostStatus $status
- * @property Carbon|null $published_at
- * @property Carbon|null $deleted_at
+ * @property CarbonImmutable|null $published_at
+ * @property CarbonImmutable|null $deleted_at
  * @property-read User $author
  * @property-read Collection<int, Tag> $tags
  *
@@ -50,7 +50,7 @@ class Post extends DefaultModel
     {
         return [
             'status' => PostStatus::class,
-            'published_at' => 'datetime',
+            'published_at' => 'immutable_datetime',
         ];
     }
 

@@ -7,6 +7,7 @@ use App\Http\Requests\Post\StorePostRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post\Post;
 use App\Models\Tag\Tag;
+use Domain\Post\Actions\ChangePostStatusAction;
 use Domain\Post\Actions\DeletePostAction;
 use Domain\Post\Actions\RestorePostAction;
 use Domain\Post\Actions\StorePostAction;
@@ -14,6 +15,8 @@ use Domain\Post\Actions\UpdatePostAction;
 use Domain\Post\DataTransferObjects\PostDTO;
 use Domain\Post\DataTransferObjects\PostSearchDTO;
 use Domain\Post\Resources\PostResource;
+use Domain\Post\States\DraftState;
+use Domain\Post\States\PublishedState;
 use Domain\Tag\Resources\TagResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -126,6 +129,34 @@ class PostController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Post restored.']);
 
         return to_route('posts.index');
+    }
+
+    /**
+     * Publish a draft post.
+     */
+    public function publish(Post $post, ChangePostStatusAction $action): RedirectResponse
+    {
+        Gate::authorize('update', $post);
+
+        $action($post, new PublishedState($post->status));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Post published.']);
+
+        return back();
+    }
+
+    /**
+     * Move a published post back to draft.
+     */
+    public function unpublish(Post $post, ChangePostStatusAction $action): RedirectResponse
+    {
+        Gate::authorize('update', $post);
+
+        $action($post, new DraftState($post->status));
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Post moved back to draft.']);
+
+        return back();
     }
 
     private function availableTags(): AnonymousResourceCollection
