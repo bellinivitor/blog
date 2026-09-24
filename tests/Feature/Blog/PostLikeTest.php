@@ -6,8 +6,8 @@ use Inertia\Testing\AssertableInertia as Assert;
 test('a reader likes a published post without touching updated_at', function () {
     $post = Post::factory()->published()->create(['slug' => 'hello', 'updated_at' => '2026-01-01 10:00:00']);
 
-    $this->postJson(route('blog.posts.like', 'hello'))->assertOk()->assertExactJson(['likes' => 1]);
-    $this->postJson(route('blog.posts.like', 'hello'))->assertOk()->assertExactJson(['likes' => 2]);
+    $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.1'])->postJson(route('blog.posts.like', 'hello'))->assertOk()->assertExactJson(['likes' => 1]);
+    $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.2'])->postJson(route('blog.posts.like', 'hello'))->assertOk()->assertExactJson(['likes' => 2]);
 
     expect($post->fresh())
         ->likes_count->toBe(2)
@@ -23,14 +23,28 @@ test('drafts and trashed posts cannot be liked', function (Post $post) {
     'trashed' => fn () => Post::factory()->published()->trashed()->create(['slug' => 'trashed']),
 ]);
 
-test('limits how often the same client can like', function () {
-    Post::factory()->published()->create(['slug' => 'hello']);
+test('a visitor likes each post only once a day', function () {
+    $post = Post::factory()->published()->create(['slug' => 'hello']);
 
-    foreach (range(1, 10) as $attempt) {
-        $this->postJson(route('blog.posts.like', 'hello'))->assertOk();
+    $this->postJson(route('blog.posts.like', 'hello'))->assertOk();
+    $this->postJson(route('blog.posts.like', 'hello'))->assertTooManyRequests();
+
+    expect($post->fresh()->likes_count)->toBe(1);
+
+    $this->travel(1)->day();
+    $this->postJson(route('blog.posts.like', 'hello'))->assertOk();
+});
+
+test('a visitor has a small hourly budget of likes across posts', function () {
+    foreach (range(1, 21) as $number) {
+        Post::factory()->published()->create(['slug' => "post-{$number}"]);
     }
 
-    $this->postJson(route('blog.posts.like', 'hello'))->assertTooManyRequests();
+    foreach (range(1, 20) as $number) {
+        $this->postJson(route('blog.posts.like', "post-{$number}"))->assertOk();
+    }
+
+    $this->postJson(route('blog.posts.like', 'post-21'))->assertTooManyRequests();
 });
 
 test('the post page shows its likes', function () {

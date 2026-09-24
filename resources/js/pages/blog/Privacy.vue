@@ -74,8 +74,11 @@ const blog = computed(() => usePage().props.blog);
             meia-noite, e guarda só o resultado até o fim do dia. O IP em si
             nunca é gravado, e depois da meia-noite não há como voltar a ele nem
             ligar visitas de dias diferentes. Isso é feito por legítimo
-            interesse (estatística do próprio blog), sem cookie. Não há login
-            para leitores, comentários ou newsletter.
+            interesse (estatística do próprio blog), sem cookie. As curtidas
+            seguem a mesma ideia: para barrar robôs, o servidor guarda por até
+            um dia uma impressão embaralhada do seu IP, que não pode ser
+            revertida sem a chave do blog. Não há login para leitores,
+            comentários ou newsletter.
         </p>
 
         <h2>Contato</h2>

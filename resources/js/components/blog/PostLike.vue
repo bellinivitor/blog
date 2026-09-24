@@ -64,9 +64,20 @@ async function like(): Promise<void> {
 
         count.value = response.likes;
         rememberLike();
-    } catch {
-        isLiked.value = false;
+    } catch (error) {
         count.value--;
+
+        // 429: this visitor already liked the post today, so keep the heart.
+        if (
+            (error as { response?: { status?: number } }).response?.status ===
+            429
+        ) {
+            rememberLike();
+
+            return;
+        }
+
+        isLiked.value = false;
     }
 }
 </script>

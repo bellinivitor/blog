@@ -73,7 +73,7 @@ Route::get('preview/{token}', [BlogPreviewController::class, 'show'])
     ->name('preview.show');
 Route::post('{slug}/like', [BlogPostLikeController::class, 'store'])
     ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
-    ->middleware('throttle:10,1')
+    ->middleware('throttle:post-likes')
     ->name('blog.posts.like');
 Route::get('privacidade', [BlogPrivacyController::class, 'show'])->name('blog.privacy');
 
