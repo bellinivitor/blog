@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { nextTick, ref, useTemplateRef } from 'vue';
 import { Form, Head, Link } from '@inertiajs/vue3';
-import { Eye } from '@lucide/vue';
+import { ExternalLink, Eye } from '@lucide/vue';
+import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import PostController from '@/actions/App/Http/Controllers/PostController';
 import Heading from '@/components/Heading.vue';
 import PostDraftBanner from '@/components/posts/PostDraftBanner.vue';
@@ -80,6 +81,19 @@ function onSaved(): void {
                         rel="noopener"
                     >
                         <Eye /> Preview
+                    </a>
+                </Button>
+                <Button
+                    v-if="post.status === 'published' && !isScheduled(post)"
+                    variant="outline"
+                    as-child
+                >
+                    <a
+                        :href="BlogPostController.show(post.slug).url"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        <ExternalLink /> View post
                     </a>
                 </Button>
                 <PostScheduleForm v-if="post.status === 'draft'" :post="post" />
