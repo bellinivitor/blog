@@ -109,22 +109,25 @@ function barHeight(views: number): string {
             <span>Today</span>
         </figcaption>
 
-        <table class="sr-only">
-            <caption>
-                Views per day
-            </caption>
-            <thead>
-                <tr>
-                    <th scope="col">Day</th>
-                    <th scope="col">Views</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="day in days" :key="day.date">
-                    <td>{{ formatDay(day.date) }}</td>
-                    <td>{{ day.views }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- sr-only on the table itself does not clip its rows, which then stretch the page. -->
+        <div class="sr-only">
+            <table>
+                <caption>
+                    Views per day
+                </caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Day</th>
+                        <th scope="col">Views</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="day in days" :key="day.date">
+                        <td>{{ formatDay(day.date) }}</td>
+                        <td>{{ day.views }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </figure>
 </template>
