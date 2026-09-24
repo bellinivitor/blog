@@ -7,7 +7,8 @@ const props = defineProps<{
 }>();
 
 const numberFormat = new Intl.NumberFormat();
-const dateFormat = new Intl.DateTimeFormat(undefined, {
+/** English, like the rest of the admin ("Today" sits next to it). */
+const dateFormat = new Intl.DateTimeFormat('en', {
     day: 'numeric',
     month: 'short',
 });

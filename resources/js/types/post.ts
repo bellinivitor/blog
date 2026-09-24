@@ -39,6 +39,16 @@ export type MostReadPost = {
     title: string;
     slug: string;
     views_count: number;
+    likes_count: number;
+};
+
+/** A post as listed on the dashboard, without its content. */
+export type PostSummary = {
+    id: number;
+    title: string;
+    excerpt: string | null;
+    published_at: string | null;
+    updated_at: string | null;
 };
 
 export type DailyViews = {

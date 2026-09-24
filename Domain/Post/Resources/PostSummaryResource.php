@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * A post as listed on the dashboard, without its content.
+ *
  * @mixin Post
  */
-class MostReadPostResource extends JsonResource
+class PostSummaryResource extends JsonResource
 {
     /**
      * @return array<string, mixed>
@@ -19,9 +21,9 @@ class MostReadPostResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'slug' => $this->slug,
-            'views_count' => $this->views_count,
-            'likes_count' => $this->likes_count,
+            'excerpt' => $this->excerpt,
+            'published_at' => $this->published_at?->toIso8601String(),
+            'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }
 }

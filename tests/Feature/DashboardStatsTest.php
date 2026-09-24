@@ -10,22 +10,24 @@ beforeEach(function () {
     $this->travelTo('2026-09-23 15:00:00');
 });
 
-test('shows total views and the most read published posts of the author', function () {
+test('shows total views and likes and the most read published posts of the author', function () {
     $author = User::factory()->create();
-    Post::factory()->for($author, 'author')->published()->create(['title' => 'Popular', 'views_count' => 30]);
-    Post::factory()->for($author, 'author')->published()->create(['title' => 'Quiet', 'views_count' => 5]);
+    Post::factory()->for($author, 'author')->published()->create(['title' => 'Popular', 'views_count' => 30, 'likes_count' => 4]);
+    Post::factory()->for($author, 'author')->published()->create(['title' => 'Quiet', 'views_count' => 5, 'likes_count' => 1]);
     Post::factory()->for($author, 'author')->published()->create(['title' => 'Unread', 'views_count' => 0]);
-    Post::factory()->for($author, 'author')->create(['title' => 'Draft', 'views_count' => 99]);
-    Post::factory()->published()->create(['title' => 'Someone else', 'views_count' => 500]);
+    Post::factory()->for($author, 'author')->create(['title' => 'Draft', 'views_count' => 99, 'likes_count' => 9]);
+    Post::factory()->published()->create(['title' => 'Someone else', 'views_count' => 500, 'likes_count' => 50]);
 
     $response = $this->actingAs($author)->get(route('dashboard'));
 
     $response->assertInertia(fn (Assert $page) => $page
         ->component('Dashboard')
         ->where('totalViews', 35)
+        ->where('totalLikes', 5)
         ->has('mostRead', 2)
         ->where('mostRead.0.title', 'Popular')
         ->where('mostRead.0.views_count', 30)
+        ->where('mostRead.0.likes_count', 4)
         ->where('mostRead.1.title', 'Quiet')
     );
 });
@@ -80,5 +82,26 @@ test('has no last publication before the first post goes out', function () {
         ->where('lastPublishedAt', null)
         ->where('viewsInPeriod', 0)
         ->has('dailyViews', 30)
+    );
+});
+
+test('lists the drafts of the author, last edited first, and the posts scheduled to go out next', function () {
+    $author = User::factory()->create();
+    Post::factory()->for($author, 'author')->create(['title' => 'Old draft', 'updated_at' => '2026-09-01 10:00:00']);
+    Post::factory()->for($author, 'author')->create(['title' => 'Fresh draft', 'updated_at' => '2026-09-23 10:00:00']);
+    Post::factory()->for($author, 'author')->published()->create(['title' => 'Later', 'published_at' => '2026-10-20 12:00:00']);
+    Post::factory()->for($author, 'author')->published()->create(['title' => 'Sooner', 'published_at' => '2026-10-01 12:00:00']);
+    Post::factory()->for($author, 'author')->published()->create(['title' => 'Already out', 'published_at' => '2026-09-01 12:00:00']);
+    Post::factory()->create(['title' => 'Someone else draft']);
+
+    $response = $this->actingAs($author)->get(route('dashboard'));
+
+    $response->assertInertia(fn (Assert $page) => $page
+        ->has('drafts', 2)
+        ->where('drafts.0.title', 'Fresh draft')
+        ->where('drafts.1.title', 'Old draft')
+        ->has('scheduled', 2)
+        ->where('scheduled.0.title', 'Sooner')
+        ->where('scheduled.1.title', 'Later')
     );
 });
