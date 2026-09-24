@@ -21,7 +21,8 @@ use Inertia\Response;
 class TagController extends Controller
 {
     /**
-     * List tags, optionally filtered by name or showing only trashed ones.
+     * List tags with how many posts use each, filtered by name or showing
+     * only trashed ones. Tags are created and edited in a dialog on this page.
      */
     public function index(SearchTagRequest $request): Response
     {
@@ -31,6 +32,7 @@ class TagController extends Controller
 
         $tags = Tag::query()
             ->search($searchDTO)
+            ->withCount('posts')
             ->orderBy('name')
             ->paginate(15)
             ->withQueryString();
@@ -38,17 +40,11 @@ class TagController extends Controller
         return Inertia::render('tags/Index', [
             'tags' => TagResource::collection($tags),
             'filters' => $searchDTO->toArray(),
+            'counts' => [
+                'active' => Tag::query()->count(),
+                'trashed' => Tag::query()->onlyTrashed()->count(),
+            ],
         ]);
-    }
-
-    /**
-     * Show the form to create a tag.
-     */
-    public function create(): Response
-    {
-        Gate::authorize('create', Tag::class);
-
-        return Inertia::render('tags/Create');
     }
 
     /**
@@ -62,19 +58,7 @@ class TagController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Tag created.']);
 
-        return to_route('tags.index');
-    }
-
-    /**
-     * Show the form to edit a tag.
-     */
-    public function edit(Tag $tag): Response
-    {
-        Gate::authorize('update', $tag);
-
-        return Inertia::render('tags/Edit', [
-            'tag' => TagResource::make($tag),
-        ]);
+        return back(fallback: route('tags.index'));
     }
 
     /**
@@ -88,7 +72,7 @@ class TagController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Tag updated.']);
 
-        return to_route('tags.index');
+        return back(fallback: route('tags.index'));
     }
 
     /**
@@ -102,7 +86,7 @@ class TagController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Tag deleted.']);
 
-        return to_route('tags.index');
+        return back(fallback: route('tags.index'));
     }
 
     /**
@@ -116,6 +100,6 @@ class TagController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Tag restored.']);
 
-        return to_route('tags.index');
+        return back(fallback: route('tags.index'));
     }
 }

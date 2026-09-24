@@ -15,3 +15,9 @@ export type Paginated<T> = {
         total: number;
     };
 };
+
+/** Items on each tab of a list that has a trash. */
+export type TrashCounts = {
+    active: number;
+    trashed: number;
+};

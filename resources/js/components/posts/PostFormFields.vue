@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue';
 import InputError from '@/components/InputError.vue';
 import MarkdownEditor from './MarkdownEditor.vue';
 import TagInput from './TagInput.vue';
+import { slugify } from '@/lib/slugify';
 import type { PostDraftFields } from '@/composables/usePostDraft';
 import type { Post, Tag } from '@/types';
 
@@ -29,15 +30,7 @@ const initial = {
 
 const title = ref(initial.title ?? '');
 
-/** Mirrors Str::slug closely enough to preview the address left empty. */
-const slugFromTitle = computed(() =>
-    title.value
-        .normalize('NFD')
-        .replace(/\p{Diacritic}/gu, '')
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, ''),
-);
+const slugFromTitle = computed(() => slugify(title.value));
 
 /** Read on mount: the server render has no window. */
 const host = ref('');

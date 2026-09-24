@@ -20,6 +20,7 @@ class ReadingResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'url' => $this->url,
+            'citations_count' => $this->whenHas('citations_count'),
             'created_at' => $this->created_at?->toIso8601String(),
             'deleted_at' => $this->deleted_at?->toIso8601String(),
         ];

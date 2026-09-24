@@ -12,7 +12,6 @@ import {
     PenLine,
     Plus,
     RotateCcw,
-    Search,
     Send,
     Trash2,
     X,
@@ -21,8 +20,10 @@ import { computed, nextTick, ref } from 'vue';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import PostController from '@/actions/App/Http/Controllers/PostController';
 import ConfirmDeleteDialog from '@/components/ConfirmDeleteDialog.vue';
+import IndexTabs from '@/components/IndexTabs.vue';
 import Pagination from '@/components/Pagination.vue';
 import PostStatusBadge from '@/components/posts/PostStatusBadge.vue';
+import SearchField from '@/components/SearchField.vue';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -230,51 +231,26 @@ const emptyMessage = computed(() => {
         </header>
 
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <nav
-                aria-label="Post status"
-                class="-mx-1 flex max-w-full gap-1 overflow-x-auto px-1"
-            >
-                <Link
-                    v-for="tab in tabs"
-                    :key="tab.key"
-                    :href="PostController.index({ query: tabQuery(tab.key) })"
-                    :aria-current="activeTab === tab.key ? 'page' : undefined"
-                    preserve-scroll
-                    class="inline-flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-sm transition-colors outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                    :class="
-                        activeTab === tab.key
-                            ? 'bg-foreground text-background'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    "
-                >
-                    {{ tab.label }}
-                    <span
-                        class="text-xs tabular-nums"
-                        :class="
-                            activeTab === tab.key
-                                ? 'text-background/70'
-                                : 'text-muted-foreground/80'
-                        "
-                    >
-                        {{ counts[tab.key] }}
-                    </span>
-                </Link>
-            </nav>
+            <IndexTabs
+                label="Post status"
+                :tabs="
+                    tabs.map((tab) => ({
+                        ...tab,
+                        count: counts[tab.key],
+                        href: PostController.index({
+                            query: tabQuery(tab.key),
+                        }),
+                        active: activeTab === tab.key,
+                    }))
+                "
+            />
 
             <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">
-                <label class="relative min-w-0 flex-1 sm:w-60 sm:flex-none">
-                    <span class="sr-only">Search by title</span>
-                    <Search
-                        class="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground"
-                        aria-hidden="true"
-                    />
-                    <input
-                        v-model="search"
-                        type="search"
-                        placeholder="Search by title"
-                        class="h-9 w-full rounded-md border border-input bg-transparent pr-3 pl-8 text-sm shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30"
-                    />
-                </label>
+                <SearchField
+                    v-model="search"
+                    placeholder="Search by title"
+                    class="flex-1 sm:w-60 sm:flex-none"
+                />
                 <select
                     aria-label="Tag"
                     class="h-9 rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:bg-input/30"

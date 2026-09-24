@@ -26,13 +26,13 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
 
-    Route::resource('tags', TagController::class)->except('show');
+    Route::resource('tags', TagController::class)->except(['show', 'create', 'edit']);
     Route::patch('tags/{tag}/restore', [TagController::class, 'restore'])
         ->withTrashed()
         ->name('tags.restore');
 
     Route::get('readings/search', [ReadingController::class, 'search'])->name('readings.search');
-    Route::resource('readings', ReadingController::class)->except('show');
+    Route::resource('readings', ReadingController::class)->except(['show', 'create', 'edit']);
     Route::patch('readings/{reading}/restore', [ReadingController::class, 'restore'])
         ->withTrashed()
         ->name('readings.restore');

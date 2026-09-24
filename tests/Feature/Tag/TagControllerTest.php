@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Post\Post;
 use App\Models\Tag\Tag;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -24,6 +25,22 @@ describe('index', function () {
             ->where('tags.data.0.name', 'Laravel')
             ->where('tags.data.1.name', 'Vue')
             ->where('filters', ['search' => null, 'trashed' => false])
+        );
+    });
+
+    test('shows how many posts use each tag and counts active and trashed tags', function () {
+        $tag = Tag::factory()->create(['name' => 'Laravel']);
+        Post::factory()->count(2)->hasAttached($tag)->create();
+        Post::factory()->trashed()->hasAttached($tag)->create();
+        Tag::factory()->create(['name' => 'Vue']);
+        Tag::factory()->trashed()->create();
+
+        $response = $this->actingAs(User::factory()->create())->get(route('tags.index'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('tags.data.0.posts_count', 2)
+            ->where('tags.data.1.posts_count', 0)
+            ->where('counts', ['active' => 2, 'trashed' => 1])
         );
     });
 
@@ -53,14 +70,6 @@ describe('index', function () {
             ->where('tags.data.0.name', 'Archived')
             ->where('filters.trashed', true)
         );
-    });
-});
-
-describe('create', function () {
-    test('renders the create page', function () {
-        $response = $this->actingAs(User::factory()->create())->get(route('tags.create'));
-
-        $response->assertInertia(fn (Assert $page) => $page->component('tags/Create'));
     });
 });
 
@@ -105,19 +114,6 @@ describe('store', function () {
 
         $response->assertInvalid(['slug' => 'The slug has already been taken.']);
         $this->assertDatabaseCount('tags', 1);
-    });
-});
-
-describe('edit', function () {
-    test('renders the edit page with the tag', function () {
-        $tag = Tag::factory()->create(['name' => 'Vue', 'slug' => 'vue']);
-
-        $response = $this->actingAs(User::factory()->create())->get(route('tags.edit', $tag));
-
-        $response->assertInertia(fn (Assert $page) => $page
-            ->component('tags/Edit')
-            ->where('tag', ['id' => $tag->id, 'name' => 'Vue', 'slug' => 'vue', 'deleted_at' => null])
-        );
     });
 });
 

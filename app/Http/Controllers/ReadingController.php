@@ -6,6 +6,7 @@ use App\Http\Requests\Reading\SearchReadingRequest;
 use App\Http\Requests\Reading\StoreReadingRequest;
 use App\Http\Requests\Reading\UpdateReadingRequest;
 use App\Models\Reading\Reading;
+use Domain\Reading\Actions\CountReadingCitationsAction;
 use Domain\Reading\Actions\DeleteReadingAction;
 use Domain\Reading\Actions\RestoreReadingAction;
 use Domain\Reading\Actions\StoreReadingAction;
@@ -24,9 +25,11 @@ class ReadingController extends Controller
     private const int MAX_SEARCH_RESULTS = 8;
 
     /**
-     * List readings, newest first, optionally filtered by title or showing only trashed ones.
+     * List readings, newest first, with how many posts cite each, filtered by
+     * title or showing only trashed ones. Readings are created and edited in a
+     * dialog on this page.
      */
-    public function index(SearchReadingRequest $request): Response
+    public function index(SearchReadingRequest $request, CountReadingCitationsAction $countCitations): Response
     {
         Gate::authorize('viewAny', Reading::class);
 
@@ -38,9 +41,15 @@ class ReadingController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        $countCitations($readings->getCollection());
+
         return Inertia::render('readings/Index', [
             'readings' => ReadingResource::collection($readings),
             'filters' => $searchDTO->toArray(),
+            'counts' => [
+                'active' => Reading::query()->count(),
+                'trashed' => Reading::query()->onlyTrashed()->count(),
+            ],
         ]);
     }
 
@@ -62,17 +71,7 @@ class ReadingController extends Controller
     }
 
     /**
-     * Show the form to create a reading.
-     */
-    public function create(): Response
-    {
-        Gate::authorize('create', Reading::class);
-
-        return Inertia::render('readings/Create');
-    }
-
-    /**
-     * Store a new tag.
+     * Store a new reading.
      */
     public function store(StoreReadingRequest $request, StoreReadingAction $action): RedirectResponse
     {
@@ -82,19 +81,7 @@ class ReadingController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Reading created.']);
 
-        return to_route('readings.index');
-    }
-
-    /**
-     * Show the form to edit a reading.
-     */
-    public function edit(Reading $reading): Response
-    {
-        Gate::authorize('update', $reading);
-
-        return Inertia::render('readings/Edit', [
-            'reading' => ReadingResource::make($reading),
-        ]);
+        return back(fallback: route('readings.index'));
     }
 
     /**
@@ -108,7 +95,7 @@ class ReadingController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Reading updated.']);
 
-        return to_route('readings.index');
+        return back(fallback: route('readings.index'));
     }
 
     /**
@@ -122,7 +109,7 @@ class ReadingController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Reading deleted.']);
 
-        return to_route('readings.index');
+        return back(fallback: route('readings.index'));
     }
 
     /**
@@ -136,6 +123,6 @@ class ReadingController extends Controller
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Reading restored.']);
 
-        return to_route('readings.index');
+        return back(fallback: route('readings.index'));
     }
 }

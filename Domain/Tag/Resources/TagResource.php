@@ -20,6 +20,7 @@ class TagResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'posts_count' => $this->whenCounted('posts'),
             'deleted_at' => $this->deleted_at?->toIso8601String(),
         ];
     }

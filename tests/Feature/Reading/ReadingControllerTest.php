@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Post\Post;
 use App\Models\Reading\Reading;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -27,6 +28,26 @@ describe('index', function () {
         );
     });
 
+    test('shows how many posts cite each reading and counts active and trashed readings', function () {
+        $cited = Reading::factory()->create(['title' => 'Cited', 'created_at' => now()->subDay()]);
+        Reading::factory()->create(['title' => 'Not cited']);
+        Reading::factory()->trashed()->create();
+        Post::factory()->create(['content' => "See [the book](leitura:{$cited->id}) and [again](leitura:{$cited->id})."]);
+        Post::factory()->create(['content' => "Also [this](leitura:{$cited->id})."]);
+        Post::factory()->trashed()->create(['content' => "Gone [cite](leitura:{$cited->id})."]);
+        Post::factory()->create(['content' => "A different [reading](leitura:{$cited->id}9)."]);
+
+        $response = $this->actingAs(User::factory()->create())->get(route('readings.index'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('readings.data.0.title', 'Not cited')
+            ->where('readings.data.0.citations_count', 0)
+            ->where('readings.data.1.title', 'Cited')
+            ->where('readings.data.1.citations_count', 2)
+            ->where('counts', ['active' => 2, 'trashed' => 1])
+        );
+    });
+
     test('filters readings by title', function () {
         Reading::factory()->create(['title' => 'Domain-Driven Design']);
         Reading::factory()->create(['title' => 'Refactoring']);
@@ -51,14 +72,6 @@ describe('index', function () {
             ->has('readings.data', 1)
             ->where('readings.data.0.title', 'Archived')
         );
-    });
-});
-
-describe('create', function () {
-    test('renders the create page', function () {
-        $response = $this->actingAs(User::factory()->create())->get(route('readings.create'));
-
-        $response->assertInertia(fn (Assert $page) => $page->component('readings/Create'));
     });
 });
 
@@ -90,21 +103,6 @@ describe('store', function () {
         'ftp' => 'ftp://example.com/book.pdf',
         'not a url' => 'refactoring',
     ]);
-});
-
-describe('edit', function () {
-    test('renders the edit page with the reading', function () {
-        $reading = Reading::factory()->create(['title' => 'Refactoring', 'url' => 'https://example.com']);
-
-        $response = $this->actingAs(User::factory()->create())->get(route('readings.edit', $reading));
-
-        $response->assertInertia(fn (Assert $page) => $page
-            ->component('readings/Edit')
-            ->where('reading.id', $reading->id)
-            ->where('reading.title', 'Refactoring')
-            ->where('reading.url', 'https://example.com')
-        );
-    });
 });
 
 describe('update', function () {
