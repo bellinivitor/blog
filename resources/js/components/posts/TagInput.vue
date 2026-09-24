@@ -120,7 +120,7 @@ function onInput(): void {
                     :aria-label="`Remove ${tag.name}`"
                     @click="remove(tag)"
                 >
-                    <X />
+                    <X class="size-3" />
                 </button>
                 <input type="hidden" :name="`${name}[]`" :value="tag.id" />
             </Badge>
@@ -139,7 +139,7 @@ function onInput(): void {
                     :aria-label="`Remove ${tagName}`"
                     @click="removeNew(tagName)"
                 >
-                    <X />
+                    <X class="size-3" />
                 </button>
                 <input type="hidden" :name="`${newName}[]`" :value="tagName" />
             </Badge>

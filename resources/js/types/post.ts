@@ -11,6 +11,7 @@ export type Post = {
     status: PostStatus;
     published_at: string | null;
     views_count: number;
+    likes_count: number;
     /** Public preview link, or null while sharing is disabled. */
     preview_url: string | null;
     updated_at: string | null;
@@ -23,6 +24,14 @@ export type PostFilters = {
     status: PostStatus | null;
     tag_id: number | null;
     trashed: boolean;
+};
+
+/** How many posts the author has in each tab of the post list. */
+export type PostCounts = {
+    all: number;
+    draft: number;
+    published: number;
+    trashed: number;
 };
 
 export type MostReadPost = {

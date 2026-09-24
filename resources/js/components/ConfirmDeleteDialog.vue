@@ -18,11 +18,14 @@ defineProps<{
     description: string;
     form: RouteFormDefinition<'post'>;
 }>();
+
+/** Bind to open the dialog from elsewhere (a menu item) instead of the slot. */
+const open = defineModel<boolean>('open');
 </script>
 
 <template>
-    <Dialog>
-        <DialogTrigger as-child>
+    <Dialog v-model:open="open">
+        <DialogTrigger v-if="$slots.default" as-child>
             <slot />
         </DialogTrigger>
         <DialogContent>

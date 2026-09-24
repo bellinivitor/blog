@@ -9,6 +9,7 @@ use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post\Post;
 use App\Models\Tag\Tag;
 use Domain\Post\Actions\ChangePostStatusAction;
+use Domain\Post\Actions\CountAuthorPostsAction;
 use Domain\Post\Actions\DeletePostAction;
 use Domain\Post\Actions\RenderPostContentAction;
 use Domain\Post\Actions\RestorePostAction;
@@ -32,7 +33,7 @@ class PostController extends Controller
     /**
      * List the user's posts, filtered by title, status, tag or trash.
      */
-    public function index(SearchPostRequest $request): Response
+    public function index(SearchPostRequest $request, CountAuthorPostsAction $countAuthorPosts): Response
     {
         Gate::authorize('viewAny', Post::class);
 
@@ -49,6 +50,7 @@ class PostController extends Controller
         return Inertia::render('posts/Index', [
             'posts' => PostResource::collection($posts),
             'filters' => $searchDTO->toArray(),
+            'counts' => $countAuthorPosts($request->user()),
             'tags' => $this->availableTags(),
         ]);
     }

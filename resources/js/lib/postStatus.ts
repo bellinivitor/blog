@@ -10,3 +10,22 @@ export function isScheduled(
         new Date(post.published_at).getTime() > Date.now()
     );
 }
+
+export type PostState = 'draft' | 'scheduled' | 'published';
+
+/** Where the post stands for readers: not out, waiting for its date, or live. */
+export function postState(
+    post: Pick<Post, 'status' | 'published_at'>,
+): PostState {
+    if (post.status === 'draft') {
+        return 'draft';
+    }
+
+    return isScheduled(post) ? 'scheduled' : 'published';
+}
+
+export const postStateLabels: Record<PostState, string> = {
+    draft: 'Draft',
+    scheduled: 'Scheduled',
+    published: 'Published',
+};

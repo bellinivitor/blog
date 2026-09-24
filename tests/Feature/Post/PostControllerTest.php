@@ -41,6 +41,33 @@ describe('index', function () {
         );
     });
 
+    test('lists each post with its views and likes', function () {
+        $author = User::factory()->create();
+        Post::factory()->for($author, 'author')->published()->create(['views_count' => 120, 'likes_count' => 7]);
+
+        $response = $this->actingAs($author)->get(route('posts.index'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('posts.data.0.views_count', 120)
+            ->where('posts.data.0.likes_count', 7)
+        );
+    });
+
+    test('counts the author posts in each tab, whatever the filters', function () {
+        $author = User::factory()->create();
+        Post::factory()->for($author, 'author')->count(2)->create();
+        Post::factory()->for($author, 'author')->published()->create();
+        Post::factory()->for($author, 'author')->published()->create(['published_at' => now()->addWeek()]);
+        Post::factory()->for($author, 'author')->trashed()->create();
+        Post::factory()->published()->create();
+
+        $response = $this->actingAs($author)->get(route('posts.index', ['status' => 'draft', 'search' => 'nothing']));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('counts', ['all' => 4, 'draft' => 2, 'published' => 2, 'trashed' => 1])
+        );
+    });
+
     test('filters posts by title', function () {
         $author = User::factory()->create();
         Post::factory()->for($author, 'author')->create(['title' => 'Deploying Laravel apps']);

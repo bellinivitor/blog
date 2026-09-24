@@ -14,55 +14,62 @@ const { copy, copied } = useClipboard();
 </script>
 
 <template>
-    <div
-        class="flex flex-wrap items-center gap-3 rounded-lg border border-dashed px-4 py-3 text-sm"
-    >
+    <div class="space-y-3 text-sm">
+        <div class="space-y-1">
+            <h2 class="font-medium">Preview link</h2>
+            <p class="text-muted-foreground">
+                {{
+                    post.preview_url
+                        ? 'Anyone with this link can read the post, even before it is published.'
+                        : 'Share the post before it goes live. Only people with the link can read it.'
+                }}
+            </p>
+        </div>
+
         <template v-if="post.preview_url">
-            <Link2 class="size-4 shrink-0 text-muted-foreground" />
-            <span class="text-muted-foreground"
-                >Anyone with this link can read the post:</span
-            >
-            <input
-                :value="post.preview_url"
-                readonly
-                aria-label="Preview link"
-                class="h-8 min-w-0 flex-1 basis-64 rounded-md border border-input bg-transparent px-2 font-mono text-xs dark:bg-input/30"
-                @focus="($event.target as HTMLInputElement).select()"
-            />
-            <div class="flex gap-2">
+            <div class="flex gap-1.5">
+                <input
+                    :value="post.preview_url"
+                    readonly
+                    aria-label="Preview link"
+                    class="h-8 min-w-0 flex-1 rounded-md border border-input bg-muted/40 px-2 font-mono text-xs text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                    @focus="($event.target as HTMLInputElement).select()"
+                />
                 <Button
-                    size="sm"
+                    type="button"
+                    size="icon"
                     variant="outline"
+                    class="size-8"
+                    :aria-label="copied ? 'Copied' : 'Copy link'"
                     @click="copy(post.preview_url)"
                 >
-                    <Check v-if="copied" /><Copy v-else />
-                    {{ copied ? 'Copied' : 'Copy' }}
-                </Button>
-                <Button size="sm" variant="ghost" as-child>
-                    <Link
-                        :href="PostPreviewLinkController.destroy(post)"
-                        as="button"
-                        preserve-scroll
-                    >
-                        <Link2Off /> Disable
-                    </Link>
+                    <Check v-if="copied" class="text-emerald-600" />
+                    <Copy v-else />
                 </Button>
             </div>
-        </template>
-        <template v-else>
-            <Link2Off class="size-4 shrink-0 text-muted-foreground" />
-            <span class="flex-1 text-muted-foreground">
-                The preview is private. Enable a link to share it with anyone.
-            </span>
-            <Button size="sm" variant="outline" as-child>
+            <Button
+                size="sm"
+                variant="ghost"
+                class="-ml-2 text-muted-foreground"
+                as-child
+            >
                 <Link
-                    :href="PostPreviewLinkController.store(post)"
+                    :href="PostPreviewLinkController.destroy(post)"
                     as="button"
                     preserve-scroll
                 >
-                    <Link2 /> Enable preview link
+                    <Link2Off /> Disable link
                 </Link>
             </Button>
         </template>
+        <Button v-else size="sm" variant="outline" class="w-full" as-child>
+            <Link
+                :href="PostPreviewLinkController.store(post)"
+                as="button"
+                preserve-scroll
+            >
+                <Link2 /> Enable preview link
+            </Link>
+        </Button>
     </div>
 </template>

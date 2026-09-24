@@ -26,6 +26,7 @@ class PostResource extends JsonResource
             'status' => $this->status->value,
             'published_at' => $this->published_at?->toIso8601String(),
             'views_count' => $this->views_count,
+            'likes_count' => $this->likes_count,
             'preview_url' => $this->preview_token ? route('preview.show', $this->preview_token) : null,
             'updated_at' => $this->updated_at?->toIso8601String(),
             'deleted_at' => $this->deleted_at?->toIso8601String(),
