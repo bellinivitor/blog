@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Blog\BlogFeedController;
 use App\Http\Controllers\Blog\BlogPostController;
+use App\Http\Controllers\Blog\BlogPostLikeController;
 use App\Http\Controllers\Blog\BlogPreviewController;
 use App\Http\Controllers\Blog\BlogPrivacyController;
 use App\Http\Controllers\Blog\BlogReadingController;
@@ -70,6 +71,10 @@ Route::get('preview/{token}', [BlogPreviewController::class, 'show'])
     ->where('token', '[A-Za-z0-9]{40}')
     ->middleware('throttle:60,1')
     ->name('preview.show');
+Route::post('{slug}/like', [BlogPostLikeController::class, 'store'])
+    ->where('slug', '[a-z0-9]+(?:-[a-z0-9]+)*')
+    ->middleware('throttle:10,1')
+    ->name('blog.posts.like');
 Route::get('privacidade', [BlogPrivacyController::class, 'show'])->name('blog.privacy');
 
 // Addresses used before posts moved to the root and the panel to /admin.

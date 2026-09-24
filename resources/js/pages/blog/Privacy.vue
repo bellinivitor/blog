@@ -3,6 +3,7 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import BackToPosts from '@/components/blog/BackToPosts.vue';
 import { COOKIE_NOTICE_STORAGE_KEY } from '@/components/blog/CookieNotice.vue';
+import { LIKED_POSTS_STORAGE_KEY } from '@/components/blog/PostLike.vue';
 
 defineProps<{
     sessionCookie: string;
@@ -57,6 +58,11 @@ const blog = computed(() => usePage().props.blog);
             <li>
                 <code>{{ COOKIE_NOTICE_STORAGE_KEY }}</code> (armazenamento
                 local): lembra que você já viu o aviso sobre cookies.
+            </li>
+            <li>
+                <code>{{ LIKED_POSTS_STORAGE_KEY }}</code> (armazenamento
+                local): os posts que você curtiu, para o coração continuar
+                preenchido. A curtida em si é só um número, sem nada sobre você.
             </li>
         </ul>
 

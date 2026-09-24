@@ -68,6 +68,7 @@ class BlogPostController extends Controller
             'previous' => $previous ? PublishedPostResource::make($previous) : null,
             'next' => $next ? PublishedPostResource::make($next) : null,
             'related' => PublishedPostResource::collection($related),
+            'likes' => $post->likes_count,
         ])->withViewData(['meta' => $buildPageMeta($post)]);
     }
 }

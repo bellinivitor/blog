@@ -4,6 +4,7 @@ import { useTemplateRef } from 'vue';
 import BlogPostController from '@/actions/App/Http/Controllers/Blog/BlogPostController';
 import BlogTagController from '@/actions/App/Http/Controllers/Blog/BlogTagController';
 import BackToPosts from '@/components/blog/BackToPosts.vue';
+import PostLike from '@/components/blog/PostLike.vue';
 import TableOfContents from '@/components/blog/TableOfContents.vue';
 import { useArticleEnhancements } from '@/composables/useArticleEnhancements';
 import { formatLongDate } from '@/lib/blogDates';
@@ -16,6 +17,8 @@ defineProps<{
     previous: PublishedPost | null;
     next: PublishedPost | null;
     related: PublishedPost[];
+    /** Absent on previews, which cannot be liked. */
+    likes?: number;
     /**
      * Present on previews: from the panel (with a way back to the editor)
      * or through a shared preview link (without one).
@@ -89,6 +92,13 @@ useArticleEnhancements(body);
                 class="blog-prose xl:col-start-1 xl:row-start-2"
                 v-html="content"
             />
+
+            <footer
+                v-if="likes !== undefined"
+                class="mt-12 xl:col-start-1 xl:row-start-3"
+            >
+                <PostLike :slug="post.slug" :likes="likes" />
+            </footer>
 
             <aside class="hidden xl:col-start-2 xl:row-start-2 xl:block">
                 <div class="sticky top-12">

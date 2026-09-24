@@ -35,6 +35,7 @@ use Illuminate\Database\Query\Builder;
  * @property CarbonImmutable|null $revised_at
  * @property string|null $preview_token
  * @property int $views_count
+ * @property int $likes_count
  * @property CarbonImmutable|null $deleted_at
  * @property-read User $author
  * @property-read Collection<int, Tag> $tags
