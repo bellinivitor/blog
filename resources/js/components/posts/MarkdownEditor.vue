@@ -193,11 +193,13 @@ onBeforeUnmount(() => {
 }
 
 /*
- * Crepe paints the top bar icons with the outline color, which is our faint
- * border tone; they read as disabled. Use the muted text color instead.
+ * Crepe paints the top bar and selection toolbar icons with the outline
+ * color, which is our faint border tone; they read as disabled. Use the
+ * muted text color instead.
  */
 .markdown-editor .milkdown .milkdown-top-bar .top-bar-item svg,
-.markdown-editor .milkdown .milkdown-top-bar .top-bar-chevron svg {
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-chevron svg,
+.markdown-editor .milkdown .milkdown-toolbar .toolbar-item svg {
     color: var(--muted-foreground);
     fill: var(--muted-foreground);
 }
@@ -207,12 +209,14 @@ onBeforeUnmount(() => {
     stroke: var(--muted-foreground);
 }
 
-.markdown-editor .milkdown .milkdown-top-bar .top-bar-item:hover svg {
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-item:hover svg,
+.markdown-editor .milkdown .milkdown-toolbar .toolbar-item:hover svg {
     color: var(--foreground);
     fill: var(--foreground);
 }
 
-.markdown-editor .milkdown .milkdown-top-bar .top-bar-item.active svg {
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-item.active svg,
+.markdown-editor .milkdown .milkdown-toolbar .toolbar-item.active svg {
     color: var(--primary);
     fill: var(--primary);
 }
@@ -222,7 +226,8 @@ onBeforeUnmount(() => {
     fill: none;
 }
 
-.markdown-editor .milkdown .milkdown-top-bar .top-bar-divider {
+.markdown-editor .milkdown .milkdown-top-bar .top-bar-divider,
+.markdown-editor .milkdown .milkdown-toolbar .divider {
     background: var(--border);
 }
 
