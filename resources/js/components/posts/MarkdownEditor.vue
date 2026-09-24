@@ -9,6 +9,7 @@ import PostImageController from '@/actions/App/Http/Controllers/PostImageControl
 import ReadingPicker from '@/components/posts/ReadingPicker.vue';
 import ReadingSuggestions from '@/components/posts/ReadingSuggestions.vue';
 import { useReadingMention } from '@/composables/useReadingMention';
+import { codeHighlighting, codeLanguages } from '@/lib/codeHighlight';
 import type { Reading } from '@/types';
 
 /** Lucide "book-open", in the 24px format of Crepe's own toolbar icons. */
@@ -99,6 +100,10 @@ onMounted(async () => {
             [Crepe.Feature.AI]: false,
         },
         featureConfigs: {
+            [Crepe.Feature.CodeMirror]: {
+                theme: codeHighlighting,
+                languages: codeLanguages,
+            },
             [Crepe.Feature.ImageBlock]: {
                 onUpload: uploadImage,
             },
@@ -186,10 +191,33 @@ onBeforeUnmount(() => {
     --crepe-font-code:
         'Monaspace Neon', ui-monospace, SFMono-Regular, Menlo, monospace;
 
+    /* Code tokens, as the GitHub themes of the public post page. */
+    --code-keyword: #cf222e;
+    --code-entity: #8250df;
+    --code-string: #0a3069;
+    --code-constant: #0550ae;
+    --code-variable: #953800;
+    --code-tag: #116329;
+    --code-comment: #6e7781;
+
     --crepe-shadow-1:
         0px 1px 3px 1px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.2);
     --crepe-shadow-2:
         0px 2px 6px 2px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.2);
+}
+
+.dark .markdown-editor .milkdown {
+    --code-keyword: #ff7b72;
+    --code-entity: #d2a8ff;
+    --code-string: #a5d6ff;
+    --code-constant: #79c0ff;
+    --code-variable: #ffa657;
+    --code-tag: #7ee787;
+    --code-comment: #8b949e;
+}
+
+.markdown-editor .milkdown .cm-editor {
+    color: var(--foreground);
 }
 
 /*
