@@ -85,7 +85,7 @@ function tagError(): string | undefined {
             <div>
                 <label
                     for="slug"
-                    class="flex h-8 max-w-full items-center rounded-md border border-transparent px-2 font-mono text-xs text-muted-foreground transition-colors focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 hover:border-input sm:-ml-2 sm:w-fit sm:min-w-80"
+                    class="-ml-2 flex h-8 w-[calc(100%+0.5rem)] items-center rounded-md border border-transparent px-2 font-mono text-xs text-muted-foreground transition-colors focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 hover:border-input"
                 >
                     <span class="sr-only">Slug</span>
                     <span aria-hidden="true" class="shrink-0">{{ host }}/</span>
