@@ -140,7 +140,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="markdown-editor overflow-hidden rounded-md border border-input">
+    <!-- overflow-clip, not hidden: hidden would become the scroll container and stop Crepe's sticky top bar from following the page. -->
+    <div class="markdown-editor overflow-clip rounded-md border border-input">
         <div ref="root" />
         <input type="hidden" :name="name" :value="markdown" />
         <ReadingPicker v-model:open="isPickingReading" @select="citeReading" />
