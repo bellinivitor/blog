@@ -10,6 +10,7 @@ import ReadingPicker from '@/components/posts/ReadingPicker.vue';
 import ReadingSuggestions from '@/components/posts/ReadingSuggestions.vue';
 import { useReadingMention } from '@/composables/useReadingMention';
 import { codeHighlighting, codeLanguages } from '@/lib/codeHighlight';
+import { renderMermaid } from '@/lib/mermaid';
 import type { Reading } from '@/types';
 
 /** Lucide "book-open", in the 24px format of Crepe's own toolbar icons. */
@@ -41,6 +42,28 @@ async function uploadImage(file: File): Promise<string> {
 
         throw error;
     }
+}
+
+/**
+ * Mermaid blocks preview their diagram below the source; while the source is
+ * invalid (mid-typing), a note replaces it.
+ */
+function renderPreview(
+    language: string,
+    content: string,
+    applyPreview: (value: string | null) => void,
+): null | undefined {
+    if (language.toLowerCase() !== 'mermaid' || !content.trim()) {
+        return null;
+    }
+
+    renderMermaid(content).then(applyPreview, () =>
+        applyPreview(
+            '<p class="mermaid-invalid">Diagrama inválido — confira a sintaxe.</p>',
+        ),
+    );
+
+    return undefined;
 }
 
 const isPickingReading = ref(false);
@@ -103,6 +126,10 @@ onMounted(async () => {
             [Crepe.Feature.CodeMirror]: {
                 theme: codeHighlighting,
                 languages: codeLanguages,
+                renderPreview,
+                previewLabel: 'Diagrama',
+                previewToggleText: (previewOnlyMode) =>
+                    previewOnlyMode ? 'Editar' : 'Ocultar',
             },
             [Crepe.Feature.ImageBlock]: {
                 onUpload: uploadImage,
@@ -235,6 +262,11 @@ onBeforeUnmount(() => {
     .ProseMirror[contenteditable]
     hr.ProseMirror-selectednode {
     opacity: 1;
+}
+
+.markdown-editor .milkdown .mermaid-invalid {
+    color: var(--muted-foreground);
+    font-size: 0.875rem;
 }
 
 .markdown-editor .milkdown .cm-editor {

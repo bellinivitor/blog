@@ -1,11 +1,13 @@
 import { onBeforeUnmount, watch } from 'vue';
 import type { Ref } from 'vue';
+import { renderMermaidBlocks } from '@/lib/mermaid';
 
 const COPIED_FOR_MS = 2000;
 
 /**
  * Progressive enhancements for server-rendered article HTML (v-html):
- * a "#" link on every h2/h3 and a copy button on every code block.
+ * a "#" link on every h2/h3, a copy button on every code block and Mermaid
+ * blocks drawn as diagrams (redrawn when the color scheme changes).
  */
 /**
  * Copy text with the async Clipboard API, falling back to the legacy
@@ -40,6 +42,7 @@ export function useArticleEnhancements(
     body: Readonly<Ref<HTMLElement | null>>,
 ): void {
     const timers: ReturnType<typeof setTimeout>[] = [];
+    let schemeObserver: MutationObserver | null = null;
 
     function addHeadingAnchors(root: HTMLElement): void {
         root.querySelectorAll<HTMLElement>('h2[id], h3[id]').forEach(
@@ -67,7 +70,10 @@ export function useArticleEnhancements(
 
     function addCopyButtons(root: HTMLElement): void {
         root.querySelectorAll<HTMLPreElement>('pre').forEach((pre) => {
-            if (pre.parentElement?.classList.contains('code-block')) {
+            if (
+                pre.classList.contains('mermaid') ||
+                pre.parentElement?.classList.contains('code-block')
+            ) {
                 return;
             }
 
@@ -104,6 +110,25 @@ export function useArticleEnhancements(
         });
     }
 
+    function drawDiagrams(root: HTMLElement): void {
+        schemeObserver?.disconnect();
+        schemeObserver = null;
+
+        if (!root.querySelector('pre.mermaid')) {
+            return;
+        }
+
+        void renderMermaidBlocks(root);
+
+        schemeObserver = new MutationObserver(
+            () => void renderMermaidBlocks(root),
+        );
+        schemeObserver.observe(document.documentElement, {
+            attributes: true,
+            attributeFilter: ['class'],
+        });
+    }
+
     // The body element changes when the page moves to another post.
     watch(
         body,
@@ -111,10 +136,14 @@ export function useArticleEnhancements(
             if (root) {
                 addHeadingAnchors(root);
                 addCopyButtons(root);
+                drawDiagrams(root);
             }
         },
         { immediate: true, flush: 'post' },
     );
 
-    onBeforeUnmount(() => timers.forEach(clearTimeout));
+    onBeforeUnmount(() => {
+        timers.forEach(clearTimeout);
+        schemeObserver?.disconnect();
+    });
 }

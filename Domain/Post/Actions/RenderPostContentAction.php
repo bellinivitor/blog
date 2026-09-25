@@ -8,9 +8,14 @@ use Illuminate\Support\Facades\Cache;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Event\DocumentParsedEvent;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
 use League\CommonMark\MarkdownConverter;
+use League\CommonMark\Node\Node;
+use League\CommonMark\Renderer\ChildNodeRendererInterface;
+use League\CommonMark\Renderer\NodeRendererInterface;
+use League\CommonMark\Util\Xml;
 use Phiki\Adapters\CommonMark\PhikiExtension;
 use Phiki\Theme\Theme;
 
@@ -19,7 +24,7 @@ readonly class RenderPostContentAction
     /**
      * Bump whenever the rendering pipeline changes, so cached HTML is rebuilt.
      */
-    private const int RENDERER_VERSION = 3;
+    private const int RENDERER_VERSION = 4;
 
     public function __construct(
         private ResolveReadingLinksAction $resolveReadingLinks,
@@ -28,7 +33,8 @@ readonly class RenderPostContentAction
     /**
      * Render the post's Markdown to HTML with syntax highlighted code blocks
      * (light and dark themes) and ids on h2/h3 headings for the table of
-     * contents. Raw HTML in the Markdown is escaped. Cited readings
+     * contents. Mermaid blocks keep their source, escaped, for the page to draw
+     * as diagrams. Raw HTML in the Markdown is escaped. Cited readings
      * ([text](leitura:ID)) link to their current URL. The result is cached
      * per post version and, when the post cites readings, per readings version.
      */
@@ -73,8 +79,28 @@ readonly class RenderPostContentAction
             'light' => Theme::GithubLight,
             'dark' => Theme::GithubDark,
         ]));
+        $environment->addRenderer(FencedCode::class, $this->mermaidRenderer(), 20);
 
         return new MarkdownConverter($environment);
+    }
+
+    /**
+     * Renders ```mermaid blocks as <pre class="mermaid"> with the escaped
+     * source, ahead of Phiki; other blocks fall through to it.
+     */
+    private function mermaidRenderer(): NodeRendererInterface
+    {
+        return new class implements NodeRendererInterface
+        {
+            public function render(Node $node, ChildNodeRendererInterface $childRenderer): ?string
+            {
+                if (! $node instanceof FencedCode || ($node->getInfoWords()[0] ?? '') !== 'mermaid') {
+                    return null;
+                }
+
+                return '<pre class="mermaid">'.Xml::escape($node->getLiteral()).'</pre>';
+            }
+        };
     }
 
     /**

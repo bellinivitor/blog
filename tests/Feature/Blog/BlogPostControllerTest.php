@@ -99,6 +99,20 @@ describe('show', function () {
         );
     });
 
+    test('keeps mermaid blocks as escaped diagram source instead of highlighting them', function () {
+        Post::factory()->published()->create([
+            'slug' => 'hello',
+            'content' => "```mermaid\nflowchart LR\n  A --> B<script>\n```",
+        ]);
+
+        $response = $this->get(route('blog.posts.show', 'hello'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('content', fn (string $html) => str_contains($html, "<pre class=\"mermaid\">flowchart LR\n  A --&gt; B&lt;script&gt;\n</pre>")
+                && ! str_contains($html, 'phiki'))
+        );
+    });
+
     test('gives h2 and h3 headings unique ids for the table of contents', function () {
         Post::factory()->published()->create([
             'slug' => 'hello',

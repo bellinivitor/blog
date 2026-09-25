@@ -1,6 +1,8 @@
 import {
     HighlightStyle,
     LanguageDescription,
+    LanguageSupport,
+    StreamLanguage,
     syntaxHighlighting,
 } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
@@ -12,22 +14,45 @@ import { tags } from '@lezer/highlight';
  */
 
 /**
+ * Mermaid is not among the stock languages; listed so it can be picked for a
+ * diagram block, which the editor previews. Its source stays uncolored.
+ */
+const mermaid = LanguageDescription.of({
+    name: 'Mermaid',
+    alias: ['mermaid'],
+    extensions: ['mmd'],
+    load: async () =>
+        new LanguageSupport(
+            StreamLanguage.define({
+                token: (stream) => {
+                    stream.skipToEnd();
+
+                    return null;
+                },
+            }),
+        ),
+});
+
+/**
  * The editor's languages, with PHP starting in PHP mode: the stock one
  * expects an opening "<?php" tag and leaves snippets without it uncolored.
  */
-export const codeLanguages = languages.map((language) =>
-    language.name === 'PHP'
-        ? LanguageDescription.of({
-              name: language.name,
-              alias: language.alias,
-              extensions: language.extensions,
-              load: () =>
-                  import('@codemirror/lang-php').then(({ php }) =>
-                      php({ plain: true }),
-                  ),
-          })
-        : language,
-);
+export const codeLanguages = [
+    mermaid,
+    ...languages.map((language) =>
+        language.name === 'PHP'
+            ? LanguageDescription.of({
+                  name: language.name,
+                  alias: language.alias,
+                  extensions: language.extensions,
+                  load: () =>
+                      import('@codemirror/lang-php').then(({ php }) =>
+                          php({ plain: true }),
+                      ),
+              })
+            : language,
+    ),
+];
 
 /**
  * Token colors from the GitHub themes the public post page uses (Phiki),
