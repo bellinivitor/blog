@@ -216,6 +216,27 @@ onBeforeUnmount(() => {
     --code-comment: #8b949e;
 }
 
+/*
+ * Crepe hides the native caret and draws a virtual one, and paints rules,
+ * both with the outline color. Ours is the faint border tone, so both
+ * vanished; use the text color for the caret and a visible rule.
+ */
+.markdown-editor .milkdown .ProseMirror-focused {
+    --prosemirror-virtual-cursor-color: var(--foreground);
+}
+
+.markdown-editor .milkdown .ProseMirror[contenteditable] hr {
+    background-color: var(--muted-foreground);
+    opacity: 0.4;
+}
+
+.markdown-editor
+    .milkdown
+    .ProseMirror[contenteditable]
+    hr.ProseMirror-selectednode {
+    opacity: 1;
+}
+
 .markdown-editor .milkdown .cm-editor {
     color: var(--foreground);
 }
