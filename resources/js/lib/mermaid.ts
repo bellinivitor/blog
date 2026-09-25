@@ -8,12 +8,12 @@ import type { Mermaid } from 'mermaid';
 /** The public blog's paper, ink and pen (resources/css/blog.css). */
 const PALETTES = {
     light: {
-        background: '#fbf8f1',
+        background: '#fafafa',
         ink: '#262219',
         graphite: '#6b6456',
-        rule: '#e8e1d0',
+        rule: '#e8e8e8',
         pen: '#af3a03',
-        panel: '#f2ecdf',
+        panel: '#f2f2f2',
     },
     dark: {
         background: '#141922',
