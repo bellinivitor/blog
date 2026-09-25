@@ -5,13 +5,13 @@
  */
 
 .blog {
-    --paper: #f7f2e6;
+    --paper: #fbf8f1;
     --ink: #262219;
     --graphite: #6b6456;
-    --rule: #e2d9c4;
-    /* Gruvbox Light orange, like an IDE accent: 5.5:1 on the paper. */
+    --rule: #e8e1d0;
+    /* Gruvbox Light orange, like an IDE accent: 5.8:1 on the paper. */
     --pen: #af3a03;
-    --panel: #eee6d3;
+    --panel: #f2ecdf;
 
     --font-text:
         'Monaspace Neon', ui-monospace, SFMono-Regular, Menlo, monospace;
