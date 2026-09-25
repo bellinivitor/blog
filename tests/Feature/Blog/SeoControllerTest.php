@@ -45,6 +45,16 @@ describe('sitemap', function () {
         expect($lastmods[route('blog.posts.show', 'revisado')])->toBe('2026-02-20T15:30:00+00:00')
             ->and($lastmods[route('blog.posts.show', 'original')])->toBe('2026-01-05T09:00:00+00:00');
     });
+
+    test('dates the home by its latest publication', function () {
+        Post::factory()->published()->create(['published_at' => '2026-01-10 10:00:00']);
+        Post::factory()->published()->create(['published_at' => '2026-03-02 08:00:00']);
+
+        $xml = simplexml_load_string($this->get(route('sitemap'))->getContent());
+
+        expect((string) $xml->url[0]->loc)->toBe(route('home'))
+            ->and((string) $xml->url[0]->lastmod)->toBe('2026-03-02T08:00:00+00:00');
+    });
 });
 
 test('robots.txt points to the sitemap and disallows the admin', function () {

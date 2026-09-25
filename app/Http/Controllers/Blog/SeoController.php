@@ -40,7 +40,7 @@ class SeoController extends Controller
             ->view('blog.sitemap', [
                 'posts' => $posts,
                 'tags' => $tags,
-                'lastPublishedAt' => $posts->max('updated_at'),
+                'lastPublishedAt' => $posts->max('published_at'),
                 'lastReadingAt' => $lastReadingAt !== null ? CarbonImmutable::parse($lastReadingAt) : null,
             ])
             ->header('Content-Type', 'application/xml; charset=UTF-8');
