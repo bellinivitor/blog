@@ -12,6 +12,7 @@ use League\CommonMark\Extension\CommonMark\Node\Block\FencedCode;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
 use League\CommonMark\MarkdownConverter;
+use League\CommonMark\Node\Block\Document;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
 use League\CommonMark\Renderer\NodeRendererInterface;
@@ -24,7 +25,7 @@ readonly class RenderPostContentAction
     /**
      * Bump whenever the rendering pipeline changes, so cached HTML is rebuilt.
      */
-    private const int RENDERER_VERSION = 4;
+    private const int RENDERER_VERSION = 5;
 
     public function __construct(
         private ResolveReadingLinksAction $resolveReadingLinks,
@@ -69,7 +70,10 @@ readonly class RenderPostContentAction
 
         $environment->addEventListener(
             DocumentParsedEvent::class,
-            fn (DocumentParsedEvent $event) => ($this->resolveReadingLinks)($event->getDocument()),
+            function (DocumentParsedEvent $event): void {
+                ($this->resolveReadingLinks)($event->getDocument());
+                $this->lowercaseCodeLanguages($event->getDocument());
+            },
         );
 
         $environment->addExtension(new CommonMarkCoreExtension);
@@ -82,6 +86,19 @@ readonly class RenderPostContentAction
         $environment->addRenderer(FencedCode::class, $this->mermaidRenderer(), 20);
 
         return new MarkdownConverter($environment);
+    }
+
+    /**
+     * The editor writes a block's language as its display name (```PHP,
+     * ```TypeScript), but Phiki only knows lowercase names.
+     */
+    private function lowercaseCodeLanguages(Document $document): void
+    {
+        foreach ($document->iterator() as $node) {
+            if ($node instanceof FencedCode && $node->getInfo() !== null) {
+                $node->setInfo(mb_strtolower($node->getInfo()));
+            }
+        }
     }
 
     /**

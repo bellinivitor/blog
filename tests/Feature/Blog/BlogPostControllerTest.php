@@ -99,6 +99,19 @@ describe('show', function () {
         );
     });
 
+    test('highlights code whose language the editor wrote capitalized', function () {
+        Post::factory()->published()->create([
+            'slug' => 'hello',
+            'content' => "```PHP\necho 'hi';\n```",
+        ]);
+
+        $response = $this->get(route('blog.posts.show', 'hello'));
+
+        $response->assertInertia(fn (Assert $page) => $page
+            ->where('content', fn (string $html) => str_contains($html, 'class="phiki language-php'))
+        );
+    });
+
     test('keeps mermaid blocks as escaped diagram source instead of highlighting them', function () {
         Post::factory()->published()->create([
             'slug' => 'hello',
