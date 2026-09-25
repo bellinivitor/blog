@@ -60,6 +60,8 @@ Route::prefix('admin')->group(__DIR__.'/settings.php');
 Route::get('/', [BlogPostController::class, 'index'])->name('home');
 Route::get('sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('robots.txt', [SeoController::class, 'robots'])->name('robots');
+Route::get('.well-known/security.txt', [SeoController::class, 'security'])->name('security');
+Route::get('llms.txt', [SeoController::class, 'llms'])->name('llms');
 Route::get('feed', [BlogFeedController::class, 'index'])->name('blog.feed');
 Route::get('search', [BlogSearchController::class, 'index'])
     ->middleware('throttle:60,1')

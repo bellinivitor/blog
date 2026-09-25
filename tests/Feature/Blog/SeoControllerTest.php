@@ -83,3 +83,28 @@ test('public blog pages stay indexable', function () {
     $this->get(route('blog.posts.show', 'publicado'))->assertHeaderMissing('X-Robots-Tag');
     $this->get(route('sitemap'))->assertHeaderMissing('X-Robots-Tag');
 });
+
+test('security.txt publishes a contact and an expiry a year ahead', function () {
+    $this->travelTo('2026-09-25 14:00:00');
+
+    $response = $this->get('/.well-known/security.txt');
+
+    $response->assertOk()
+        ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+        ->assertSee('Contact: '.config('blog.security_contact'))
+        ->assertSee('Expires: 2027-09-25T00:00:00Z')
+        ->assertSee('Canonical: '.route('security'));
+});
+
+test('llms.txt lists published posts with their excerpts', function () {
+    Post::factory()->published()->create(['slug' => 'publicado', 'title' => 'Post publicado', 'excerpt' => 'Um resumo.']);
+    Post::factory()->create(['slug' => 'rascunho', 'title' => 'Rascunho']);
+
+    $response = $this->get('/llms.txt');
+
+    $response->assertOk()
+        ->assertHeader('Content-Type', 'text/markdown; charset=UTF-8')
+        ->assertSee('# '.config('blog.author'))
+        ->assertSee('- [Post publicado]('.route('blog.posts.show', 'publicado').'): Um resumo.')
+        ->assertDontSee('Rascunho');
+});

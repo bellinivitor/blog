@@ -30,6 +30,13 @@ return [
     ],
 
     /*
+    | Where security issues should be reported, published in security.txt.
+    | A mailto: or https: URI.
+    */
+
+    'security_contact' => 'https://www.linkedin.com/in/bellinivitor/',
+
+    /*
     |--------------------------------------------------------------------------
     | Owner account
     |--------------------------------------------------------------------------
