@@ -165,7 +165,7 @@ function onInput(): void {
         <ul
             v-if="isOpen"
             role="listbox"
-            class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover p-1 text-sm shadow-md"
+            class="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover p-1 text-sm shadow-md"
         >
             <li
                 v-for="(tag, index) in suggestions"
