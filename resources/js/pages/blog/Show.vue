@@ -47,10 +47,10 @@ useArticleEnhancements(body);
         <article
             class="xl:grid xl:w-[98ch] xl:grid-cols-[minmax(0,68ch)_24ch] xl:gap-x-[6ch]"
         >
-            <header class="max-w-[68ch] pb-12 xl:col-start-1">
+            <header class="max-w-[68ch] pb-12 xl:col-span-2 xl:max-w-none">
                 <BackToPosts />
                 <h1
-                    class="mt-6 font-[family-name:var(--font-title)] text-[clamp(1.5rem,3.5vw,1.875rem)] leading-[1.25] font-bold tracking-[-0.02em] text-balance"
+                    class="mt-6 font-[family-name:var(--font-title)] text-[clamp(1.75rem,4.5vw,2.625rem)] leading-[1.2] font-bold tracking-[-0.02em] text-balance"
                 >
                     {{ post.title }}
                 </h1>
