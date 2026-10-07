@@ -52,6 +52,14 @@ const feedUrl = BlogFeedController.index().url;
                         Leituras
                     </Link>
                     <a :href="feedUrl" class="hover:text-[var(--ink)]">RSS</a>
+                    <a
+                        href="https://buymeacoffee.com/vitorbellini"
+                        target="_blank"
+                        rel="noopener"
+                        class="hover:text-[var(--ink)]"
+                    >
+                        Buy me a coffee
+                    </a>
                     <Link
                         :href="BlogPrivacyController.show()"
                         class="hover:text-[var(--ink)]"
