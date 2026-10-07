@@ -109,6 +109,12 @@ composer ci:check
 - Rode um worker de fila (`php artisan queue:work`).
 - O app confia no Cloudflare como proxy para pegar o IP e o esquema do visitante.
 
+## Apoie
+
+Se este projeto te ajudou, você pode me pagar um café ☕
+
+<a href="https://buymeacoffee.com/vitorbellini"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="40"></a>
+
 ## Licença
 
 MIT.
