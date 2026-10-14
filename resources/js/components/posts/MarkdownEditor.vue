@@ -11,6 +11,7 @@ import ReadingSuggestions from '@/components/posts/ReadingSuggestions.vue';
 import { useReadingMention } from '@/composables/useReadingMention';
 import { codeHighlighting, codeLanguages } from '@/lib/codeHighlight';
 import { renderMermaid } from '@/lib/mermaid';
+import { remarkImageText } from '@/lib/milkdownImages';
 import type { Reading } from '@/types';
 
 /** Lucide "book-open", in the 24px format of Crepe's own toolbar icons. */
@@ -151,6 +152,8 @@ onMounted(async () => {
             },
         },
     });
+
+    crepe.editor.use(remarkImageText);
 
     crepe.on((listener) => {
         listener.markdownUpdated((_ctx, value) => {
